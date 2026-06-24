@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test",
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
@@ -16,5 +16,9 @@
     "express": "^5.2.1",
     "mongoose": "^9.7.2",
     "nodemon": "^3.1.14"
+  },
+  "devDependencies": {
+    "eslint": "^10.5.0",
+    "globals": "^17.7.0"
   }
 }
