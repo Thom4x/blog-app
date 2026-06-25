@@ -75,4 +75,9 @@ describe('total likes', () => {
 
         assert.deepStrictEqual(result, { author: "Robert C. Martin", blogs: 5 })
     })
+    test('most liked author', () => {
+        const result = listHelper.mostLiked(blogs);
+
+        assert.deepStrictEqual(result, { author: "Robert C. Martin", totalLikes: 42 })
+    })
 })
