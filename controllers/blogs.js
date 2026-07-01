@@ -1,14 +1,17 @@
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
 
-blogRouter.get('/', (request, response) => {
-    Blog
-        .find({})
-        .then(blogs => {
-            response.json(blogs)
-        }).catch((error) => {
-            response.status(404).send({ error: "missing..." })
-        })
+blogRouter.get('/', async (request, response) => {
+    const blog = await Blog.find({})
+    response.json(blog)
+
+    //Blog
+    //    .find({})
+    //    .then(blogs => {
+    //        response.json(blogs)
+    //    }).catch((error) => {
+    //        response.status(404).send({ error: "missing..." })
+    //    })
 })
 
 blogRouter.post('/', (request, response, next) => {

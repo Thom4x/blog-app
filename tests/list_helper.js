@@ -1,6 +1,7 @@
 import _ from 'lodash';
+import Blog from '../models/blog.js'
 
-const blogs = [
+export const blogs = [
     {
         _id: "5a422a851b54a676234d17f7",
         title: "React patterns",
@@ -99,3 +100,7 @@ export const mostLiked = (blogLiked) => {
     return winner;
 }
 
+export const blogsDb = async () => { // Este método devuelve todas las notas que hay en la base de datos en formato JSON. Se utiliza para comprobar el estado de la base de datos antes y después de realizar operaciones de prueba.
+    const blogs = await Blog.find({})
+    return blogs.map(blog => blog.toJSON())
+}
