@@ -104,3 +104,11 @@ export const blogsDb = async () => { // Este método devuelve todas las notas qu
     const blogs = await Blog.find({})
     return blogs.map(blog => blog.toJSON())
 }
+
+export const verifyTitleUrl = async (title, url) => {
+    const blogs = await Blog.find({})
+
+    if (!blogs.some(blog => blog.title === title) || !blogs.some(blog => blog.url === url)) {
+        response.status(400).json({ error: 'Title and URL are required' })
+    }
+}

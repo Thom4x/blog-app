@@ -61,6 +61,57 @@ test.only('solicitud post para blogs', async () => {
 
 })
 
+test('si la propiedad likes falta en la solicitud, se establece en 0 por defecto', async () => {
+    const blogSinLikes = {
+        title: "Título de prueba sin likes",
+        author: "Tomas Holguin",
+        url: "http://test-url.com"
+    }
+
+    const response = await api
+        .post('/api/blogs')
+        .send(blogSinLikes)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+    // Verificamos que el blog retornado tenga likes: 0
+    assert.strictEqual(response.body.likes, 0)
+})
+
+test('verificar si falta title o url en la solicitud', async () => {
+    const blogSinLikes = {
+        author: "Tomas Holguin",
+        url: "http://test-url.com"
+    }
+
+    const response = await api
+        .post('/api/blogs')
+        .send(blogSinLikes)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+    const find = await listHelper.verifyTitleUrl(blogSinLikes.title, blogSinLikes.url)
+    assert.strictEqual(find, undefined)
+
+})
+
+describe('eliminacion por id', () => {
+    test('eliminacion de una nota', async () => {
+        const blogsAtStart = await listHelper.blogsDb()
+        const blogToDelete = blogsAtStart[0]
+
+        const response = await api
+            .delete(`/api/blogs/${blogToDelete.id}`)
+            .expect(204)
+
+        const blogsAtEnd = await listHelper.blogsDb() // actualizamos la lista de blogs después de la eliminación
+        assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
+
+        const contents = blogsAtEnd.map(r => r.content) // Creamos un array con los contenidos de los blogs restantes
+        assert(!contents.includes(blogToDelete.content)) // Verificamos que el contenido del blog eliminado ya no esté presente en la lista final
+    })
+})
+
 after(async () => {
     await mongoose.connection.close()
 })
