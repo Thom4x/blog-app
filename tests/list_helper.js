@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import Blog from '../models/blog.js'
+import User from '../models/user.js'
 
 export const blogs = [
     {
@@ -52,8 +53,36 @@ export const blogs = [
     }
 ]
 
+export const users = [
+    {
+        _id: "6a422a851b54a676234d17f7",
+        username: "Michael Chan",
+        name: "Michael Chan",
+        passwordHash: "hashedpassword1",
+        blogs: [],
+        __v: 0
+    },
+    {
+        _id: "6a422aa71b54a676234d17f8",
+        username: "Oilmaxeks",
+        name: "Oihan Holguin",
+        passwordHash: "hashedpassword2",
+        blogs: [],
+        __v: 0
+    },
+    {
+        _id: "6a422b3a1b54a676234d17f9",
+        username: "GDFSDF",
+        name: "Ogah hjolguin",
+        passwordHash: "hashedpassfdagaword2",
+        blogs: [],
+        __v: 0
+    },
 
-export const dummy = (blogs) => {
+]
+
+
+export const dummy = (blogs) => { // Este método devuelve 1, y se utiliza para comprobar que la función dummy se llama correctamente en los tests.
     if (Array.isArray(blogs)) {
         return 1
     }
@@ -112,3 +141,10 @@ export const verifyTitleUrl = async (title, url) => {
         response.status(400).json({ error: 'Title and URL are required' })
     }
 }
+
+
+export const userDb = async () => { // Este método devuelve todas los usuarios que hay en la base de datos en formato JSON. Se utiliza para comprobar el estado de la base de datos antes y después de realizar operaciones de prueba.
+    const users = await User.find({})
+    return users.map(user => user.toJSON())
+}
+
