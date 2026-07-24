@@ -1,6 +1,8 @@
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const jwt = require('jsonwebtoken')
+const { getTokenFrom } = require('../utils/middleware')
 
 blogRouter.get('/', async (request, response) => {
     const blog = await Blog
@@ -18,13 +20,23 @@ blogRouter.get('/', async (request, response) => {
 
 blogRouter.post('/', async (request, response) => {
     const body = request.body
-    const user = await User.findById(body.userId)
+
+    // Check if the user is authenticated STEP 1
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    if (!decodedToken.id) {
+        return response.status(401).json({ error: 'token invalid' })
+    }
+
+    // Buscar el usuario en la base de datos usando el ID del token decodificado STEP 2
+    const user = await User.findById(decodedToken.id)
 
     //if (!body.title || !body.url) {
     //    return response.status(400).json({
     //        error: 'title or url missing'
     //    })
     //}
+
+    // Crear un nuevo blog y asociarlo con el usuario STEP 3
 
     const blog = new Blog({
         title: body.title,
