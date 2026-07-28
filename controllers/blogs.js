@@ -54,8 +54,25 @@ blogRouter.post('/', async (request, response) => {
 })
 
 blogRouter.delete('/:id', async (request, response) => {
+    // 1. Verificar y decodificar el token primero
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    if (!decodedToken.id) {
+        return response.status(401).json({ error: 'token invalid' })
+    }
+    // 2. Buscar el blog por su ID y verificar si existe
+    const blog = await Blog.findById(request.params.id)
+    if (!blog) {
+        return response.status(404).json({ error: 'blog not found' })
+    }
+
+    // 3. Verificar si el usuario que intenta eliminar el blog es el mismo que lo creó
+    if (blog.user.toString() !== decodedToken.id.toString()) {
+        return response.status(403).json({ error: 'only the creator can delete a blog' })
+    }
+
+    // 4. Si todo está bien, eliminar el blog
     await Blog.findByIdAndDelete(request.params.id)
-    response.status(204).end()
+    response.json({ message: 'blog deleted successfully' }).status(204).end()
 })
 
 blogRouter.put('/:id', async (request, response) => {
