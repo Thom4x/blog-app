@@ -22,6 +22,23 @@ const tokenExtractor = (request, response, next) => {
     next()
 }
 
+// Middleware para extraer el usuario del token y agregarlo al objeto de solicitud
+const userExtractor = async (request, response, next) => {
+    const token = request.token
+
+    if (token) {
+        try {
+            const decodedToken = jwt.verify(token, process.env.SECRET)
+            if (decodedToken.id) {
+                request.user = await User.findById(decodedToken.id)
+            }
+        } catch (error) {
+            request.user = null
+        }
+    }
+
+    next()
+}
 
 const errorHandler = (error, request, response, next) => {
     logger.error(error.message)
@@ -46,4 +63,5 @@ module.exports = {
     unknownEndpoint,
     errorHandler,
     tokenExtractor,
+    userExtractor
 }

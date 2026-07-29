@@ -20,6 +20,7 @@ blogRouter.get('/', async (request, response) => {
 
 blogRouter.post('/', async (request, response) => {
     const body = request.body
+    // Obtener el usuario autenticado del objeto de solicitud
 
     // Check if the user is authenticated STEP 1
     const decodedToken = jwt.verify(request.token, process.env.SECRET)
@@ -29,6 +30,9 @@ blogRouter.post('/', async (request, response) => {
 
     // Buscar el usuario en la base de datos usando el ID del token decodificado STEP 2
     const user = await User.findById(decodedToken.id)
+    // como usamos el middleware? 
+    console.log('Usuario autenticado:', user.username)
+
 
     //if (!body.title || !body.url) {
     //    return response.status(400).json({
@@ -55,6 +59,7 @@ blogRouter.post('/', async (request, response) => {
 
 blogRouter.delete('/:id', async (request, response) => {
     // 1. Verificar y decodificar el token primero
+
     const decodedToken = jwt.verify(request.token, process.env.SECRET)
     if (!decodedToken.id) {
         return response.status(401).json({ error: 'token invalid' })
