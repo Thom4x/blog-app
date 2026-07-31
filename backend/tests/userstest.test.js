@@ -47,13 +47,15 @@ describe('Solicitudes con los Usuarios', () => {
         assert.strictEqual(usersAtEnd.length, usersAtStart.length)
     })
     test('Que pasa si tengo espacios en blanco', async () => {
+        const qgis = {
+            username: "bl op",
+            name: "ma",
+            password: "sgfs"
+        }
+
         const response = await api
             .post('/api/users')
-            .send({
-                username: "bu",
-                name: "hlas",
-                password: "adsgasg"
-            })
+            .send(qgis)
         console.log(response.body, response.status)
     })
 })

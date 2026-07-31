@@ -81,7 +81,8 @@ test('si la propiedad likes falta en la solicitud, se establece en 0 por defecto
 test('verificar si falta title o url en la solicitud', async () => {
     const blogSinLikes = {
         author: "Tomas Holguin",
-        url: "http://test-url.com"
+        url: "http://test-url.com",
+        title: "Título de prueba sin likes"
     }
 
     const response = await api
@@ -95,7 +96,7 @@ test('verificar si falta title o url en la solicitud', async () => {
 
 })
 
-describe('eliminacion por id', () => {
+describe('eliminacion por id y actualizacion por id', () => {
     test('eliminacion de una nota', async () => {
         const blogsAtStart = await listHelper.blogsDb()
         const blogToDelete = blogsAtStart[0]
@@ -110,6 +111,26 @@ describe('eliminacion por id', () => {
         const contents = blogsAtEnd.map(r => r.content) // Creamos un array con los contenidos de los blogs restantes
         assert(!contents.includes(blogToDelete.content)) // Verificamos que el contenido del blog eliminado ya no esté presente en la lista final
     })
+    test('likes can be updated', async () => {
+        const blogsAtStart = await listHelper.blogsDb();
+        const blogToUpdate = blogsAtStart[0];
+
+        const updatedData = {
+            likes: blogToUpdate.likes + 1
+        };
+
+        await api
+            .put(`/api/blogs/${blogToUpdate.id}`)
+            .send(updatedData)
+            .expect(200)
+            .expect('Content-Type', /application\/json/);
+
+        const blogsAtEnd = await listHelper.blogsDb();
+        const updatedBlog = blogsAtEnd.find(b => b.id === blogToUpdate.id);
+        assert.strictEqual(updatedBlog.likes, blogToUpdate.likes + 1);
+
+
+    });
 })
 
 after(async () => {
