@@ -15,7 +15,7 @@ const App = () => {
       .then(data =>
         setBlogs(data)
       )
-  }, []) // [] esto significa que el efecto se ejecuta solo una vez, después del primer renderizado
+  }, [])
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -30,13 +30,20 @@ const App = () => {
     } catch (error) {
       setTimeout(() => {
         console.log("Wrong credentials", error)
-      }, 5000);
+      }, 1000);
     }
   }
+
+  const logout = () => {
+    localStorage.removeItem('loggedBlogappUser');
+    setUser(null)
+  }
+
 
   console.log("username", username)
   console.log("password", password)
   console.log("user", user)
+
   if (user === null) return (
     <div>
       <h2>Log in to application</h2>
@@ -66,6 +73,10 @@ const App = () => {
     <div>
 
       <h2>blogs</h2>
+
+      <p>{user} logged in</p>
+      <button onClick={logout}>logout</button>
+
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
