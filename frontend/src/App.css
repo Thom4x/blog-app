@@ -1,0 +1,31 @@
+/* Estilo base de la notificación */
+.notification {
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    border: 1px solid transparent;
+}
+
+/* Estado de Éxito */
+.success {
+    color: green;
+    background: lightgrey;
+    font-size: 20px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+/* Estado de Error */
+.error {
+    color: red;
+    background: lightgrey;
+    font-size: 20px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}

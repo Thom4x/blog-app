@@ -1,6 +1,20 @@
 import { useState, useEffect } from 'react'
+import './App.css'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
+
+const StatusMessage = ({ message, status }) => {
+  if (!message) return null
+
+  const className = status === 'success' ? 'success' : 'error'
+
+  return (
+    <div className={className}>
+      {message}
+    </div>
+  )
+}
+
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -8,6 +22,8 @@ const App = () => {
   const [username, setUsername] = useState('');
   const [password, setpassword] = useState('');
   const [user, setUser] = useState(null);
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState('success');
 
 
   useEffect(() => {
@@ -26,10 +42,26 @@ const App = () => {
       setUser(username)
       setUsername('');
       setpassword('');
-    } catch (error) {
+      setMessage(`Welcome ${user.username}`)
       setTimeout(() => {
-        console.log("Wrong credentials", error)
-      }, 1000);
+        setMessage(null)
+      }, 3000);
+    } catch (error) {
+      console.log("Error CLI:", error)
+      setMessageType('error')
+      if (error.response) {
+        if (error.response.status === 401) {
+          setMessage('Invalid username or password')
+        } else {
+          setMessage(`Ocurrió un problema en el servidor.Inténtalo más tarde.`)
+        }
+      } else {
+        setMessage('No se pudo conectar con el servidor. Revisa tu conexión.')
+      }
+      setTimeout(() => {
+        setMessage(null)
+        setMessageType('success')
+      }, 3000);
     }
   }
 
@@ -45,8 +77,18 @@ const App = () => {
       const newBlog = await blogService.create(typeBlog)
       setBlogs(blogs.concat(newBlog))
       setTypeBlog({ title: '', author: '', url: '' })
+      setMessage(`A new blog "${newBlog.title}" by ${newBlog.author} added`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000);
     } catch (error) {
-      console.error("Error creating blog", error)
+      console.log("Error CLI:", error)
+      setMessage(`Error creating blog ${error}`)
+      setMessageType('error')
+      setTimeout(() => {
+        setMessage(null)
+        setMessageType('success')
+      }, 3000);
     }
   }
 
@@ -62,6 +104,7 @@ const App = () => {
   if (user === null) return (
     <div>
       <h2>Log in to application</h2>
+      <StatusMessage message={message} status={messageType} />
       <form onSubmit={handleLogin}>
         <div>
           <label>
@@ -88,7 +131,7 @@ const App = () => {
     <div>
 
       <h2>blogs</h2>
-
+      <StatusMessage message={message} status={messageType} />
       <div style={{ display: 'inline-block' }}>
         <span>{user} logged in</span>
         <button onClick={logout} style={{ marginLeft: '10px' }}>logout</button>
