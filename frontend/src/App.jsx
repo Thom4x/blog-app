@@ -2,19 +2,10 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
-
-const StatusMessage = ({ message, status }) => {
-  if (!message) return null
-
-  const className = status === 'success' ? 'success' : 'error'
-
-  return (
-    <div className={className}>
-      {message}
-    </div>
-  )
-}
-
+import LoginForm from './components/LoginForm'
+import Message from './components/Message'
+import Togglable from './components/Togglable'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -24,7 +15,6 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState('success');
-
 
   useEffect(() => {
     blogService
@@ -39,7 +29,7 @@ const App = () => {
     try {
       const user = await blogService.login({ username, password })
       blogService.setToken(user.token)
-      setUser(username)
+      setUser(user.username)
       setUsername('');
       setpassword('');
       setMessage(`Welcome ${user.username}`)
@@ -101,86 +91,53 @@ const App = () => {
     }))
   }
 
-  if (user === null) return (
-    <div>
-      <h2>Log in to application</h2>
-      <StatusMessage message={message} status={messageType} />
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>
-            username
-            <input type="text"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)} />
-          </label>
-        </div>
-        <div>
-          <label>
-            password
-            <input type="password"
-              value={password}
-              onChange={(event) => setpassword(event.target.value)}
-            />
-          </label>
-        </div>
-        <button type='submit'>Login</button>
-      </form>
-    </div>
+  const loginForm = () => (
+    <Togglable buttonLabel='login'>
+      <LoginForm
+        handleLogin={handleLogin}
+        message={message}
+        messageType={messageType}
+        password={password}
+        setUsername={setUsername}
+        setpassword={setpassword}
+        username={username}
+      />
+    </Togglable>
   )
+
+
+  const blogForm = () => (
+    <Togglable buttonLabel='create blog'>
+      <BlogForm
+        handleBlogForm={handleBlogForm}
+        handleInputChange={handleInputChange}
+        typeBlog={typeBlog}
+      />
+    </Togglable>
+  )
+
+  console.log("tenemos el usuario", user)
   return (
     <div>
+      <h2>App To Blogs!</h2>
+      <Message message={message} status={messageType} />
 
-      <h2>blogs</h2>
-      <StatusMessage message={message} status={messageType} />
-      <div style={{ display: 'inline-block' }}>
-        <span>{user} logged in</span>
-        <button onClick={logout} style={{ marginLeft: '10px' }}>logout</button>
-      </div>
+      {!user &&
+        loginForm()}
+      {user &&
+        <div>
+          <p>{user} logged in <button onClick={logout}>logout</button></p>
+          {blogForm()}
+          {
+            blogs.map(blog =>
+              <Blog key={blog._id} blog={blog} />
+            )
+          }
+        </div>}
 
-      <h2>Create new</h2>
-      <div>
-        <form onSubmit={handleBlogForm}>
-          <div>
-            <label>
-              title:
-              <input
-                type="text"
-                name="title"
-                value={typeBlog.title}
-                onChange={handleInputChange}
-              />
-            </label>
-          </div>
-          <div>
-            <label>
-              author:
-              <input
-                type="text"
-                name="author"
-                value={typeBlog.author}
-                onChange={handleInputChange}
-              />
-            </label>
-          </div>
-          <div>
-            <label>
-              url:
-              <input
-                type="text"
-                name="url"
-                value={typeBlog.url}
-                onChange={handleInputChange}
-              />
-            </label>
-          </div>
-          <button type='submit'>Create</button>
-        </form>
-      </div>
       <br />
-      {blogs.map(blog =>
-        <Blog key={blog._id} blog={blog} />
-      )}
-    </div>
+
+    </div >
   )
 }
 
