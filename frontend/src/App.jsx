@@ -79,6 +79,30 @@ const App = () => {
     }
   }
 
+  const updateLikesBtn = async (blog, id) => {
+    try {
+      const updatedBlog = {
+        ...blog,
+        likes: blog.likes + 1
+      }
+      const returnedBlog = await blogService.update(id, updatedBlog)
+      setBlogs(blogs.map(b => b._id !== blog._id ? b : returnedBlog))
+      setMessage('Up!')
+      setTimeout(() => {
+        setMessage(null)
+      }, 1000);
+    } catch (error) {
+      console.log("Error Likes", error)
+      setMessage(`Error creating blog ${error}`)
+      setMessageType('error')
+      setTimeout(() => {
+        setMessage(null)
+        setMessageType('success')
+      }, 3000);
+    }
+  }
+
+
   const loginForm = () => (
     <Togglable buttonLabel='login'>
       <LoginForm
@@ -103,6 +127,8 @@ const App = () => {
   )
 
   console.log("tenemos el usuario", user)
+  console.log(blogs.map(blog => blog._id))
+
   return (
     <div>
       <h2>App To Blogs!</h2>
@@ -115,8 +141,9 @@ const App = () => {
           <p>{user} logged in <button onClick={logout}>logout</button></p>
           {blogForm()}
           {
-            blogs.map(blog => <Blog key={blog._id} blog={blog} />)
+            blogs.map(blog => <Blog updateLikes={() => updateLikesBtn(blog, blog._id)} key={blog._id} blog={blog} />)
           }
+
         </div>}
 
       <br />
