@@ -9,7 +9,6 @@ import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [typeBlog, setTypeBlog] = useState({ title: '', author: '', url: '' });
   const [username, setUsername] = useState('');
   const [password, setpassword] = useState('');
   const [user, setUser] = useState(null);
@@ -61,12 +60,10 @@ const App = () => {
     setUser(null)
   }
 
-  const handleBlogForm = async (event) => {
-    event.preventDefault()
+  const handleBlogForm = async (data) => {
     try {
-      const newBlog = await blogService.create(typeBlog)
+      const newBlog = await blogService.create(data)
       setBlogs(blogs.concat(newBlog))
-      setTypeBlog({ title: '', author: '', url: '' })
       setMessage(`A new blog "${newBlog.title}" by ${newBlog.author} added`)
       setTimeout(() => {
         setMessage(null)
@@ -80,15 +77,6 @@ const App = () => {
         setMessageType('success')
       }, 3000);
     }
-  }
-
-  const handleInputChange = (event) => {
-    const { name, value } = event.target
-    setTypeBlog(typeBlog =>
-    ({
-      ...typeBlog,
-      [name]: value
-    }))
   }
 
   const loginForm = () => (
@@ -109,9 +97,7 @@ const App = () => {
   const blogForm = () => (
     <Togglable buttonLabel='create blog'>
       <BlogForm
-        handleBlogForm={handleBlogForm}
-        handleInputChange={handleInputChange}
-        typeBlog={typeBlog}
+        createBlog={handleBlogForm}
       />
     </Togglable>
   )

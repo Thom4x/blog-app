@@ -1,4 +1,18 @@
-const BlogForm = ({ handleBlogForm, typeBlog, handleInputChange }) => {
+import { useState } from "react";
+
+const BlogForm = ({ createBlog }) => {
+    const [typeBlog, setTypeBlog] = useState({ title: '', author: '', url: '' });
+
+    const handleBlogForm = (event) => {
+        event.preventDefault()
+        createBlog({
+            title: typeBlog.title,
+            author: typeBlog.author,
+            url: typeBlog.url
+        })
+        setTypeBlog('')
+    }
+
     return (
         <div>
             <form onSubmit={handleBlogForm}>
@@ -9,7 +23,7 @@ const BlogForm = ({ handleBlogForm, typeBlog, handleInputChange }) => {
                             type="text"
                             name="title"
                             value={typeBlog.title}
-                            onChange={handleInputChange}
+                            onChange={(event) => setTypeBlog({ ...typeBlog, title: event.target.value })}
                         />
                     </label>
                 </div>
@@ -20,7 +34,7 @@ const BlogForm = ({ handleBlogForm, typeBlog, handleInputChange }) => {
                             type="text"
                             name="author"
                             value={typeBlog.author}
-                            onChange={handleInputChange}
+                            onChange={(event) => setTypeBlog({ ...typeBlog, author: event.target.value })}
                         />
                     </label>
                 </div>
@@ -31,7 +45,7 @@ const BlogForm = ({ handleBlogForm, typeBlog, handleInputChange }) => {
                             type="text"
                             name="url"
                             value={typeBlog.url}
-                            onChange={handleInputChange}
+                            onChange={(event) => setTypeBlog({ ...typeBlog, url: event.target.value })}
                         />
                     </label>
                 </div>
