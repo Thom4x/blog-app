@@ -1,10 +1,9 @@
 import Message from './Message'
 
-const LoginForm = ({ setUsername, setpassword, message, messageType, handleLogin, username, password }) => {
+const LoginForm = ({ setUsername, setpassword, handleLogin, username, password }) => {
     return (
         <div>
             <h2>Log in to application</h2>
-            <Message message={message} status={messageType} />
             <form onSubmit={handleLogin}>
                 <div>
                     <label>

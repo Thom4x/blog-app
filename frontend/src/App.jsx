@@ -93,7 +93,7 @@ const App = () => {
       }, 1000);
     } catch (error) {
       console.log("Error Likes", error)
-      setMessage(`Error creating blog ${error}`)
+      setMessage(`Like update Error ${error}`)
       setMessageType('error')
       setTimeout(() => {
         setMessage(null)
@@ -138,7 +138,7 @@ const App = () => {
           <p>{user} logged in <button onClick={logout}>logout</button></p>
           {blogForm()}
           {
-            blogs.map(blog => <Blog updateLikes={() => updateLikesBtn(blog, blog._id)} key={blog._id} blog={blog} />)
+            blogs.toSorted((a, b) => b.likes - a.likes).map(blog => <Blog updateLikes={() => updateLikesBtn(blog, blog._id)} key={blog._id} blog={blog} />)
           }
 
         </div>}
