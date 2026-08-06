@@ -102,6 +102,30 @@ const App = () => {
     }
   }
 
+  const removeBlog = async (id) => {
+    if (window.confirm(`Deseas eliminar este blog? ${id}`)) {
+      try {
+        const eliminated = await blogService.deleteBlog(id)
+        console.log("Yes, eliminated", eliminated)
+        setBlogs(blogs.filter(b => b._id !== id))
+        setMessage("Blog eliminated")
+        setTimeout(() => {
+          setMessage(null)
+          setMessageType('success')
+        }, 2000);
+      } catch (error) {
+        console.log("Error deleting blog", error)
+        setMessage(`Error deleting blog ${error}`)
+        setMessageType('error')
+        setTimeout(() => {
+          setMessage(null)
+          setMessageType('success')
+        }, 3000);
+      }
+    }
+
+  }
+
 
   const loginForm = () => (
     <Togglable buttonLabel='login'>
@@ -138,7 +162,7 @@ const App = () => {
           <p>{user} logged in <button onClick={logout}>logout</button></p>
           {blogForm()}
           {
-            blogs.toSorted((a, b) => b.likes - a.likes).map(blog => <Blog updateLikes={() => updateLikesBtn(blog, blog._id)} key={blog._id} blog={blog} />)
+            blogs.toSorted((a, b) => b.likes - a.likes).map(blog => <Blog updateLikes={() => updateLikesBtn(blog, blog._id)} removeBlog={() => removeBlog(blog._id)} key={blog._id} blog={blog} />)
           }
 
         </div>}
