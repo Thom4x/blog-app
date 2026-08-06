@@ -83,11 +83,14 @@ blogRouter.delete('/:id', async (request, response) => {
 blogRouter.put('/:id', async (request, response) => {
     const { likes } = request.body;
 
+    // Update the likes of the blog with the given ID
     const updatedBlog = await Blog.findByIdAndUpdate(
         request.params.id,
         { likes },
         { new: true, runValidators: true, context: 'query' }
-    );
+    ).populate('user', { username: 1, name: 1 });
+
+    console.log("Updated blog:", updatedBlog);
 
     if (updatedBlog) {
         response.json(updatedBlog);

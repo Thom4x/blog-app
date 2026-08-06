@@ -126,9 +126,6 @@ const App = () => {
     </Togglable>
   )
 
-  console.log("tenemos el usuario", user)
-  console.log(blogs.map(blog => blog._id))
-
   return (
     <div>
       <h2>App To Blogs!</h2>
