@@ -8,12 +8,12 @@ import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState('');
-  const [password, setpassword] = useState('');
-  const [user, setUser] = useState(null);
-  const [message, setMessage] = useState(null);
-  const [messageType, setMessageType] = useState('success');
+  const [blogs, setBlogs] = useState([])
+  const [username, setUsername] = useState('')
+  const [password, setpassword] = useState('')
+  const [user, setUser] = useState(null)
+  const [message, setMessage] = useState(null)
+  const [messageType, setMessageType] = useState('success')
 
   useEffect(() => {
     blogService
@@ -29,20 +29,20 @@ const App = () => {
       const user = await blogService.login({ username, password })
       blogService.setToken(user.token)
       setUser(user.username)
-      setUsername('');
-      setpassword('');
+      setUsername('')
+      setpassword('')
       setMessage(`Welcome ${user.username}`)
       setTimeout(() => {
         setMessage(null)
-      }, 3000);
+      }, 3000)
     } catch (error) {
-      console.log("Error CLI:", error)
+      console.log('Error CLI:', error)
       setMessageType('error')
       if (error.response) {
         if (error.response.status === 401) {
           setMessage('Invalid username or password')
         } else {
-          setMessage(`Ocurrió un problema en el servidor.Inténtalo más tarde.`)
+          setMessage('Ocurrió un problema en el servidor.Inténtalo más tarde.')
         }
       } else {
         setMessage('No se pudo conectar con el servidor. Revisa tu conexión.')
@@ -50,13 +50,13 @@ const App = () => {
       setTimeout(() => {
         setMessage(null)
         setMessageType('success')
-      }, 3000);
+      }, 3000)
     }
   }
 
   const logout = () => {
-    blogService.setToken(null);
-    localStorage.removeItem('loggedBlogappUser');
+    blogService.setToken(null)
+    localStorage.removeItem('loggedBlogappUser')
     setUser(null)
   }
 
@@ -67,15 +67,15 @@ const App = () => {
       setMessage(`A new blog "${newBlog.title}" by ${newBlog.author} added`)
       setTimeout(() => {
         setMessage(null)
-      }, 5000);
+      }, 5000)
     } catch (error) {
-      console.log("Error CLI:", error)
+      console.log('Error CLI:', error)
       setMessage(`Error creating blog ${error}`)
       setMessageType('error')
       setTimeout(() => {
         setMessage(null)
         setMessageType('success')
-      }, 3000);
+      }, 3000)
     }
   }
 
@@ -90,15 +90,15 @@ const App = () => {
       setMessage('Up!')
       setTimeout(() => {
         setMessage(null)
-      }, 1000);
+      }, 1000)
     } catch (error) {
-      console.log("Error Likes", error)
+      console.log('Error Likes', error)
       setMessage(`Like update Error ${error}`)
       setMessageType('error')
       setTimeout(() => {
         setMessage(null)
         setMessageType('success')
-      }, 3000);
+      }, 3000)
     }
   }
 
@@ -106,21 +106,27 @@ const App = () => {
     if (window.confirm(`Deseas eliminar este blog? ${id}`)) {
       try {
         const eliminated = await blogService.deleteBlog(id)
-        console.log("Yes, eliminated", eliminated)
+        console.log('Yes, eliminated', eliminated)
         setBlogs(blogs.filter(b => b._id !== id))
-        setMessage("Blog eliminated")
+        setMessage(`Has eliminado el blog: ${blogs.find(b => b._id === id).title}`)
         setTimeout(() => {
           setMessage(null)
           setMessageType('success')
-        }, 2000);
+        }, 2000)
       } catch (error) {
-        console.log("Error deleting blog", error)
-        setMessage(`Error deleting blog ${error}`)
+        console.log('Error deleting blog', error)
         setMessageType('error')
+        if (error.response) {
+          if (error.response.status === 401) {
+            setMessage('No estas autorizado para eliminar este blog')
+          } else {
+            setMessage('Ocurrió un problema en el servidor.Inténtalo más tarde.')
+          }
+        }
         setTimeout(() => {
           setMessage(null)
           setMessageType('success')
-        }, 3000);
+        }, 3000)
       }
     }
 

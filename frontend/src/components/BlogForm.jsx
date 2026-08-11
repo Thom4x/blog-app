@@ -1,8 +1,8 @@
-import { useState } from "react";
+/* eslint-disable indent */
+import { useState } from 'react'
 
 const BlogForm = ({ createBlog }) => {
-    const [typeBlog, setTypeBlog] = useState({ title: '', author: '', url: '' });
-
+    const [typeBlog, setTypeBlog] = useState({ title: '', author: '', url: '' })
     const handleBlogForm = (event) => {
         event.preventDefault()
         createBlog({
@@ -55,4 +55,4 @@ const BlogForm = ({ createBlog }) => {
     )
 }
 
-export default BlogForm;
+export default BlogForm

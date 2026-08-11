@@ -1,15 +1,15 @@
 const Message = ({ message, status }) => {
-    if (!message) {
-        return null;
-    }
+  if (!message) {
+    return null
+  }
 
-    const className = status === 'success' ? 'success' : 'error';
+  const className = status === 'success' ? 'success' : 'error'
 
-    return (
-        <div className={className}>
-            {message}
-        </div>
-    )
+  return (
+    <div className={className}>
+      {message}
+    </div>
+  )
 }
 
-export default Message;
+export default Message
