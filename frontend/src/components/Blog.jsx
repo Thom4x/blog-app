@@ -19,10 +19,10 @@ const Blog = ({ blog, updateLikes, removeBlog }) => {
     <div style={blogStyle} data-testid='blog' >
       {!detailsVisible ?
         <div>
-          <p>{blog.title} - {blog.author} <button onClick={toggleDetails}>View</button> </p>
+          <p>{blog.title} - {blog.author} <button onClick={toggleDetails} data-testid='view'>view</button> </p>
         </div>
         :
-        <ul style={{ ...blogStyle, listStyle: 'none', paddingLeft: 0 }}>
+        <ul style={{ ...blogStyle, listStyle: 'none', paddingLeft: 0 }} data-testid='blog-details'>
           <li>{blog.title} <button onClick={toggleDetails}>Hide</button></li>
           <li >{blog.author}</li>
           <li>{blog.url}</li>
