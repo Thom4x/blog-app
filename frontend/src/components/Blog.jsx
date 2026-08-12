@@ -16,7 +16,7 @@ const Blog = ({ blog, updateLikes, removeBlog }) => {
 
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} data-testid='blog' >
       {!detailsVisible ?
         <div>
           <p>{blog.title} - {blog.author} <button onClick={toggleDetails}>View</button> </p>
@@ -24,7 +24,7 @@ const Blog = ({ blog, updateLikes, removeBlog }) => {
         :
         <ul style={{ ...blogStyle, listStyle: 'none', paddingLeft: 0 }}>
           <li>{blog.title} <button onClick={toggleDetails}>Hide</button></li>
-          <li>{blog.author}</li>
+          <li >{blog.author}</li>
           <li>{blog.url}</li>
           <li>{blog.likes} <button onClick={updateLikes}>Like</button></li>
           <li>{blog.user?.username}</li>
