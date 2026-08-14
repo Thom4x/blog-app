@@ -1,5 +1,5 @@
 import { test, expect, beforeEach, describe } from '@playwright/test';
-
+import { loginHelper, createHelper } from './helper';
 describe('Blog App', () => {
     beforeEach(async ({ page, request }) => {
         await request.post('/api/testing/reset')
@@ -19,10 +19,7 @@ describe('Blog App', () => {
     })
     describe('Login', () => {
         test('success with correct credentials', async ({ page }) => {
-            await page.getByRole('button', { name: 'login' }).click()
-            await page.getByLabel('username').fill('lamine')
-            await page.getByLabel('password').fill('a123456')
-            await page.getByRole('button', { name: 'Login' }).click()
+            await loginHelper(page, 'lamine', 'a123456')
 
             const exitDiv = page.locator('.success')
             await expect(exitDiv).toBeVisible()
@@ -52,6 +49,23 @@ describe('Blog App', () => {
 
                 const successBlog = page.getByTestId('blog')
                 await expect(successBlog.filter({ hasText: 'Skills 2 with LAMINE' })).toBeVisible()
+            })
+            describe('Edit blog', () => {
+                beforeEach(async ({ page }) => {
+                    await createHelper(page, 'fsdfsadfadfa', 'lamine yamal', 'www.lyen.com')
+                })
+                test('Can up likes', async ({ page }) => {
+                    const successBlog = page.getByTestId('blog')
+                    await successBlog.getByRole('button', { name: 'view' }).click()
+
+                    const likeCounter = successBlog.getByTestId('likes')
+                    const likesAntes = await likeCounter.textContent()
+                    await successBlog.getByRole('button', { name: 'like' }).click()
+                    const likesDespues = await likeCounter.textContent()
+
+                    await expect(likeCounter).toHaveText('1 like')
+                })
+
             })
         })
     })

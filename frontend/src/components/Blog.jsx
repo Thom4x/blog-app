@@ -26,7 +26,7 @@ const Blog = ({ blog, updateLikes, removeBlog }) => {
           <li>{blog.title} <button onClick={toggleDetails}>Hide</button></li>
           <li >{blog.author}</li>
           <li>{blog.url}</li>
-          <li>{blog.likes} <button onClick={updateLikes} data-testid='like'>like</button></li>
+          <li data-testid='likes'>{blog.likes} <button onClick={updateLikes} data-testid='like'>like</button></li>
           <li>{blog.user?.username}</li>
           <button onClick={removeBlog}>Remove</button>
         </ul>
