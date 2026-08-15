@@ -11,7 +11,6 @@ const createHelper = async (page, title, author, url) => {
     await page.getByLabel('author:').fill(author)
     await page.getByLabel('url:').fill(url)
     await page.getByRole('button', { name: 'Create' }).click()
-
 }
 
 export { loginHelper, createHelper }

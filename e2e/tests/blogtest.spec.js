@@ -65,6 +65,17 @@ describe('Blog App', () => {
 
                     await expect(likeCounter).toHaveText('1 like')
                 })
+                test('Can Delete blog window dialog...', async ({ page }) => {
+                    const openBlog = page.getByTestId('blog')
+                    await openBlog.getByRole('button', { name: 'view' }).click()
+
+                    page.on('dialog', async dialog => {
+                        await dialog.accept()
+                    })
+                    await page.getByRole('button', { name: 'Remove' }).click()
+                    await expect(openBlog).not.toBeVisible()
+
+                })
 
             })
         })
