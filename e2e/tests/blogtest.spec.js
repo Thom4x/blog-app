@@ -10,6 +10,13 @@ describe('Blog App', () => {
                 password: 'a123456'
             }
         })
+        await request.post('http://localhost:3003/api/users', {
+            data: {
+                username: 'pablogavi',
+                name: 'pablo gavira',
+                password: 'a12345'
+            }
+        })
 
         await page.goto('/')
     })
@@ -74,9 +81,17 @@ describe('Blog App', () => {
                     })
                     await page.getByRole('button', { name: 'Remove' }).click()
                     await expect(openBlog).not.toBeVisible()
-
                 })
-
+                describe('Second account', () => {
+                    beforeEach(async ({ page }) => {
+                        await page.getByRole('button', { name: 'logout' }).click()
+                        await loginHelper(page, 'pablogavi', 'a12345')
+                    })
+                    test('Only creator show Remove Button Blog', async ({ page }) => {
+                        await page.getByRole('button', { name: 'view' }).click()
+                        await expect(page.getByText('Remove')).not.toBeVisible()
+                    })
+                })
             })
         })
     })

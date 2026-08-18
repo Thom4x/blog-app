@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, updateLikes, removeBlog }) => {
+const Blog = ({ blog, updateLikes, removeBlog, username }) => {
+
   const [detailsVisible, setDetailsVisible] = useState(false)
 
   const blogStyle = {
@@ -13,7 +14,6 @@ const Blog = ({ blog, updateLikes, removeBlog }) => {
   const toggleDetails = () => {
     setDetailsVisible(!detailsVisible)
   }
-
 
   return (
     <div style={blogStyle} data-testid='blog' >
@@ -28,7 +28,9 @@ const Blog = ({ blog, updateLikes, removeBlog }) => {
           <li>{blog.url}</li>
           <li data-testid='likes'>{blog.likes} <button onClick={updateLikes} data-testid='like'>like</button></li>
           <li>{blog.user?.username}</li>
-          <button onClick={removeBlog}>Remove</button>
+          {
+            blog.user.username === username ? <button onClick={removeBlog} data-testid='remove'>Remove</button> : null
+          }
         </ul>
       }
     </div>
