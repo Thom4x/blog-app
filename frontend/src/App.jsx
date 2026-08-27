@@ -71,12 +71,17 @@ const App = () => {
       const newBlog = await blogService.create(data)
       setBlogs(blogs.concat(newBlog))
       setMessage(`A new blog "${newBlog.title}" by ${newBlog.author} added`)
+      navigate('/')
       setTimeout(() => {
         setMessage(null)
       }, 2000)
     } catch (error) {
       console.log('Error CLI:', error)
-      setMessage(`Error creating blog ${error}`)
+      if (error.response.status === 401) {
+        setMessage('No estas autorizado para crear un blog. Inicia sesión primero.')
+      } else {
+        setMessage(`Error creating blog ${error}`)
+      }
       setMessageType('error')
       setTimeout(() => {
         setMessage(null)
@@ -155,6 +160,11 @@ const App = () => {
         <Link style={{ padding: 5 }} to={'/blogs'}>blogs</Link>
         <Link style={{ padding: 5 }} to={'/login'}>login</Link>
         <Link style={{ padding: 5 }} to={'/'}>base</Link>
+        {
+          user &&
+          <span><Link style={{ padding: 5 }} to={'/create'}>new blog</Link></span>
+        }
+
       </div>
 
       <Routes>
@@ -187,6 +197,11 @@ const App = () => {
           message={message}
           messageType={messageType}
           user={user}
+        />}></Route>
+        <Route path='/create' element={<BlogForm
+          createBlog={handleBlogForm}
+          message={message}
+          messageType={messageType}
         />}></Route>
       </Routes>
 

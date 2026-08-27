@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import { useState } from 'react'
-
-const BlogForm = ({ createBlog }) => {
+import Message from './Message'
+const BlogForm = ({ createBlog, message, messageType }) => {
     const [typeBlog, setTypeBlog] = useState({ title: '', author: '', url: '' })
     const handleBlogForm = (event) => {
         event.preventDefault()
@@ -14,7 +14,11 @@ const BlogForm = ({ createBlog }) => {
     }
 
     return (
+
         <div>
+            <br />
+            <h2>Create a new blog</h2>
+            <Message message={message} status={messageType} />
             <form onSubmit={handleBlogForm}>
                 <div>
                     <label>
