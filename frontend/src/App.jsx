@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import {
-  BrowserRouter as Router,
-  Routes, Route, Link, useMatch, useNavigate
+  Routes, Route, Link, useMatch, useNavigate, useParams
 } from 'react-router-dom'
 import './App.css'
+import HomePage from './components/HomePage'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import LoginForm from './components/LoginForm'
@@ -19,7 +19,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
   const [messageType, setMessageType] = useState('success')
-
+  const navigate = useNavigate()
   useEffect(() => {
     blogService
       .getAll()
@@ -36,10 +36,11 @@ const App = () => {
       setUser(user.username)
       setUsername('')
       setpassword('')
+      navigate('/')
       setMessage(`Welcome ${user.username}`)
       setTimeout(() => {
         setMessage(null)
-      }, 3000)
+      }, 1000)
     } catch (error) {
       console.log('Error CLI:', error)
       setMessageType('error')
@@ -55,7 +56,7 @@ const App = () => {
       setTimeout(() => {
         setMessage(null)
         setMessageType('success')
-      }, 3000)
+      }, 1000)
     }
   }
 
@@ -72,7 +73,7 @@ const App = () => {
       setMessage(`A new blog "${newBlog.title}" by ${newBlog.author} added`)
       setTimeout(() => {
         setMessage(null)
-      }, 5000)
+      }, 2000)
     } catch (error) {
       console.log('Error CLI:', error)
       setMessage(`Error creating blog ${error}`)
@@ -103,7 +104,7 @@ const App = () => {
       setTimeout(() => {
         setMessage(null)
         setMessageType('success')
-      }, 3000)
+      }, 2000)
     }
   }
 
@@ -112,12 +113,13 @@ const App = () => {
       try {
         const eliminated = await blogService.deleteBlog(id)
         console.log('Yes, eliminated', eliminated)
+        navigate('/')
         setBlogs(blogs.filter(b => b._id !== id))
         setMessage(`Has eliminado el blog: ${blogs.find(b => b._id === id).title}`)
         setTimeout(() => {
           setMessage(null)
           setMessageType('success')
-        }, 2000)
+        }, 5000)
       } catch (error) {
         console.log('Error deleting blog', error)
         setMessageType('error')
@@ -131,7 +133,7 @@ const App = () => {
         setTimeout(() => {
           setMessage(null)
           setMessageType('success')
-        }, 3000)
+        }, 1000)
       }
     }
 
@@ -144,11 +146,15 @@ const App = () => {
       />
     </Togglable>
   )
+  const match = useMatch('/blogs/:id')
+  const blogInFocus = match ? blogs.find(b => b.id === match.params.id) : null
+
   return (
-    <Router>
+    <div>
       <div>
         <Link style={{ padding: 5 }} to={'/blogs'}>blogs</Link>
         <Link style={{ padding: 5 }} to={'/login'}>login</Link>
+        <Link style={{ padding: 5 }} to={'/'}>base</Link>
       </div>
 
       <Routes>
@@ -162,30 +168,31 @@ const App = () => {
           username={username}
         />}></Route>
         <Route path='/' element={
-          <div>
-            <h2>App To Blogs!</h2>
-            <Message message={message} status={messageType} />
-            {
-              <div>
-                {
-                  user &&
-                  <p>{user} logged in <button onClick={logout}>logout</button></p>
-                }
-                {blogForm()}
-                {
-                  blogs.toSorted((a, b) => b.likes - a.likes).map(blog => <Blog updateLikes={() => updateLikesBtn(blog, blog._id)} removeBlog={() => removeBlog(blog._id)} key={blog._id} blog={blog} username={user} />)
-                }
-
-              </div>
-            }
-          </div>
-
+          <HomePage
+            message={message}
+            messageType={messageType}
+            user={user}
+            blogForm={blogForm}
+            blogs={blogs}
+            updateLikesBtn={updateLikesBtn}
+            removeBlog={removeBlog}
+            logout={logout}
+          />
         }></Route>
+        <Route path='/blogs/:id' element={<Blog
+          blog={blogInFocus}
+          updateLikes={updateLikesBtn}
+          removeBlog={removeBlog}
+          username={user}
+          message={message}
+          messageType={messageType}
+          user={user}
+        />}></Route>
       </Routes>
 
       <div>
       </div >
-    </Router>
+    </div>
   )
 }
 

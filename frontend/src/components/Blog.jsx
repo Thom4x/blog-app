@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { Link, useMatch } from 'react-router-dom'
+import Message from './Message'
 
-const Blog = ({ blog, updateLikes, removeBlog, username }) => {
-
-  const [detailsVisible, setDetailsVisible] = useState(false)
+const Blog = ({ blog, updateLikes, removeBlog, message, messageType, user }) => {
+  const match = useMatch('/blogs/:id')
+  const isDetailPage = match && match.params.id === blog.id
 
   const blogStyle = {
     paddingTop: 10,
@@ -11,27 +12,31 @@ const Blog = ({ blog, updateLikes, removeBlog, username }) => {
     marginBottom: 5
   }
 
-  const toggleDetails = () => {
-    setDetailsVisible(!detailsVisible)
-  }
-
   return (
-    <div style={blogStyle} data-testid='blog' >
-      {!detailsVisible ?
-        <div>
-          <p>{blog.title} - {blog.author} <button onClick={toggleDetails} data-testid='view'>view</button> </p>
-        </div>
-        :
-        <ul style={{ ...blogStyle, listStyle: 'none', paddingLeft: 0 }} data-testid='blog-details'>
-          <li>{blog.title} <button onClick={toggleDetails}>Hide</button></li>
-          <li >{blog.author}</li>
-          <li>{blog.url}</li>
-          <li data-testid='likes'>{blog.likes} <button onClick={updateLikes} data-testid='like'>like</button></li>
-          <li>{blog.user?.username}</li>
-          {
-            blog.user.username === username ? <button onClick={removeBlog} data-testid='remove'>Remove</button> : null
-          }
-        </ul>
+    <div>
+      {
+        isDetailPage ?
+          <div style={blogStyle} data- testid='blog' >
+            <Message message={message} status={messageType} />
+            <h2>{blog.title} - {blog.author}</h2>
+            <p><a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.url}</a></p>
+            {
+              user &&
+              <p>{blog.likes} likes{' '}
+                <button onClick={() => updateLikes(blog, blog.id)}>like</button>
+              </p>
+            }
+            <p>Added by {blog.user?.username || 'Unknown'}</p>
+            <button onClick={() => removeBlog(blog.id)}>remove</button>
+          </div >
+          :
+
+          <div>
+            <div style={blogStyle} data-testid='blog'>
+
+              <Link to={`/blogs/${blog.id}`}>{blog.title} - {blog.author}</Link>
+            </div>
+          </div>
       }
     </div>
   )

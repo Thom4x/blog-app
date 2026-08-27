@@ -1,10 +1,5 @@
-import Message from './Message'
-import {
-  useNavigate
-} from 'react-router-dom'
-
 const LoginForm = ({ setUsername, setpassword, handleLogin, username, password }) => {
-  const navigate = useNavigate()
+
   return (
     <div>
       <h2>Log in to application</h2>
@@ -26,7 +21,7 @@ const LoginForm = ({ setUsername, setpassword, handleLogin, username, password }
             />
           </label>
         </div>
-        <button type='submit' onClick={() => navigate('/')}>Login</button>
+        <button type='submit'>Login</button>
       </form>
     </div>
   )
