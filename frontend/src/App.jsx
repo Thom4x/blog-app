@@ -1,4 +1,8 @@
 import { useState, useEffect } from 'react'
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link, useMatch, useNavigate
+} from 'react-router-dom'
 import './App.css'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -6,6 +10,7 @@ import LoginForm from './components/LoginForm'
 import Message from './components/Message'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
+import Login from './components/Login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -132,21 +137,6 @@ const App = () => {
 
   }
 
-  const loginForm = () => (
-    <Togglable buttonLabel='login'>
-      <LoginForm
-        handleLogin={handleLogin}
-        message={message}
-        messageType={messageType}
-        password={password}
-        setUsername={setUsername}
-        setpassword={setpassword}
-        username={username}
-      />
-    </Togglable>
-  )
-
-
   const blogForm = () => (
     <Togglable buttonLabel='create blog'>
       <BlogForm
@@ -155,25 +145,47 @@ const App = () => {
     </Togglable>
   )
   return (
-    <div>
-      <h2>App To Blogs!</h2>
-      <Message message={message} status={messageType} />
+    <Router>
+      <div>
+        <Link style={{ padding: 5 }} to={'/blogs'}>blogs</Link>
+        <Link style={{ padding: 5 }} to={'/login'}>login</Link>
+      </div>
 
-      {!user &&
-        loginForm()}
-      {user &&
-        <div>
-          <p>{user} logged in <button onClick={logout}>logout</button></p>
-          {blogForm()}
-          {
-            blogs.toSorted((a, b) => b.likes - a.likes).map(blog => <Blog updateLikes={() => updateLikesBtn(blog, blog._id)} removeBlog={() => removeBlog(blog._id)} key={blog._id} blog={blog} username={user} />)
-          }
+      <Routes>
+        <Route path='/login' element={<Login
+          handleLogin={handleLogin}
+          message={message}
+          messageType={messageType}
+          password={password}
+          setUsername={setUsername}
+          setpassword={setpassword}
+          username={username}
+        />}></Route>
+        <Route path='/' element={
+          <div>
+            <h2>App To Blogs!</h2>
+            <Message message={message} status={messageType} />
+            {
+              <div>
+                {
+                  user &&
+                  <p>{user} logged in <button onClick={logout}>logout</button></p>
+                }
+                {blogForm()}
+                {
+                  blogs.toSorted((a, b) => b.likes - a.likes).map(blog => <Blog updateLikes={() => updateLikesBtn(blog, blog._id)} removeBlog={() => removeBlog(blog._id)} key={blog._id} blog={blog} username={user} />)
+                }
 
-        </div>}
+              </div>
+            }
+          </div>
 
-      <br />
+        }></Route>
+      </Routes>
 
-    </div >
+      <div>
+      </div >
+    </Router>
   )
 }
 
