@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import {
-  Routes, Route, Link, useMatch, useNavigate, useParams
+  Routes, Route, Link, useMatch, useNavigate
 } from 'react-router-dom'
 import { Container, AppBar, Toolbar, Button, Typography } from '@mui/material'
 import './App.css'

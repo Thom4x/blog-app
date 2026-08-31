@@ -1,7 +1,7 @@
 import { Link, useMatch } from 'react-router-dom'
 import Message from './Message'
-
-const Blog = ({ blog, updateLikes, removeBlog, message, messageType, user }) => {
+import { Button, Container, Typography, Box } from '@mui/material'
+const Blog = ({ blog, updateLikes, removeBlog, user }) => {
   const match = useMatch('/blogs/:id')
   const isDetailPage = match && match.params.id === blog.id
 
@@ -16,24 +16,51 @@ const Blog = ({ blog, updateLikes, removeBlog, message, messageType, user }) => 
     <div>
       {
         isDetailPage ?
-          <div style={blogStyle} data- testid='blog' >
-            <Message message={message} status={messageType} />
-            <h2>{blog.title} - {blog.author}</h2>
-            <p><a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.url}</a></p>
-            <p>{blog.likes} likes{' '}
-              {user &&
-                <button onClick={() => updateLikes(blog, blog.id)} data-testid="like-button">like</button>
-              }
-            </p>
 
-            <p>Added by {blog.user?.username || 'Unknown'}</p>
-            {user === blog.user?.username ?
-              <button onClick={() => removeBlog(blog.id)}>remove</button> :
-              <p>-_-</p>
-            }
+
+          <div style={blogStyle} data-testid='blog' >
+            <Box
+              sx={{
+                maxWidth: 600,
+                border: '1px solid #ccc',
+                padding: '10px',
+                borderRadius: '5px'
+              }}
+            >
+              <Typography variant="h5">{blog.title}</Typography>
+              <Typography variant="subtitle1">by {blog.author}</Typography>
+              <Typography variant="body2">
+                <a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.url}</a>
+              </Typography>
+              <Typography variant="body2">Added by {blog.user?.username || 'Unknown'}</Typography>
+
+              <div style={{ display: 'flex', flexDirection: 'row', gap: '10px', alignItems: 'center', marginTop: '10px' }}>
+                <Typography variant="body2">{blog.likes} likes</Typography>
+
+                {user && (
+                  <Button
+                    variant="outlined"
+                    onClick={() => updateLikes(blog, blog.id)}
+                    data-testid="like-button"
+                  >
+                    like
+                  </Button>
+                )}
+
+                {user && user === blog.user?.username && (
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => removeBlog(blog.id)}
+                    data-testid="remove-button"
+                  >
+                    remove
+                  </Button>
+                )}
+              </div>
+            </Box>
           </div >
           :
-
           <div>
             <div style={blogStyle} data-testid='blog'>
 
@@ -41,7 +68,7 @@ const Blog = ({ blog, updateLikes, removeBlog, message, messageType, user }) => 
             </div>
           </div>
       }
-    </div>
+    </div >
   )
 }
 
