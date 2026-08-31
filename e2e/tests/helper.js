@@ -6,7 +6,7 @@ const loginHelper = async (page, username, password) => {
 }
 
 const createHelper = async (page, title, author, url) => {
-    await page.getByRole('button', { name: 'create blog' }).click()
+    //await page.getByRole('button', { name: 'create blog' }).click()
     await page.getByLabel('title:').fill(title)
     await page.getByLabel('author:').fill(author)
     await page.getByLabel('url:').fill(url)
