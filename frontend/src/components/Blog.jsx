@@ -20,14 +20,17 @@ const Blog = ({ blog, updateLikes, removeBlog, message, messageType, user }) => 
             <Message message={message} status={messageType} />
             <h2>{blog.title} - {blog.author}</h2>
             <p><a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.url}</a></p>
-            {
-              user &&
-              <p>{blog.likes} likes{' '}
-                <button onClick={() => updateLikes(blog, blog.id)}>like</button>
-              </p>
-            }
+            <p>{blog.likes} likes{' '}
+              {user &&
+                <button onClick={() => updateLikes(blog, blog.id)} data-testid="like-button">like</button>
+              }
+            </p>
+
             <p>Added by {blog.user?.username || 'Unknown'}</p>
-            <button onClick={() => removeBlog(blog.id)}>remove</button>
+            {user === blog.user?.username ?
+              <button onClick={() => removeBlog(blog.id)}>remove</button> :
+              <p>-_-</p>
+            }
           </div >
           :
 

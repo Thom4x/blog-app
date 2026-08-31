@@ -153,7 +153,7 @@ const App = () => {
   )
   const match = useMatch('/blogs/:id')
   const blogInFocus = match ? blogs.find(b => b.id === match.params.id) : null
-
+  console.log('hay', user)
   return (
     <div>
       <div>
