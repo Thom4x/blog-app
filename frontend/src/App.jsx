@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import {
   Routes, Route, Link, useMatch, useNavigate, useParams
 } from 'react-router-dom'
-
+import { Container, AppBar, Toolbar, Button, Typography } from '@mui/material'
 import './App.css'
 import HomePage from './components/HomePage'
 import Blog from './components/Blog'
@@ -154,18 +154,28 @@ const App = () => {
   )
   const match = useMatch('/blogs/:id')
   const blogInFocus = match ? blogs.find(b => b.id === match.params.id) : null
+  const hoverStyle = { '&:hover': { bgcolor: 'rgba(228, 207, 207, 0.32)' } }
   return (
     <div>
-      <div>
-        <Link style={{ padding: 5 }} to={'/blogs'}>blogs</Link>
-        <Link style={{ padding: 5 }} to={'/login'}>login</Link>
-        <Link style={{ padding: 5 }} to={'/'}>base</Link>
-        {
-          user &&
-          <span><Link style={{ padding: 5 }} to={'/create'}>new blog</Link></span>
-        }
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Blog App
+          </Typography>
+          <Button component={Link} to={'/'} sx={hoverStyle} color="inherit">blogs</Button>
+          <Button component={Link} to={'/login'} sx={hoverStyle} color="inherit">login</Button>
+          {
+            user &&
+            <Button component={Link} to={'/'} sx={hoverStyle} color="inherit" onClick={logout}>logout</Button>
+          }
+          {
+            user &&
+            <Button component={Link} to={'/create'} sx={hoverStyle} color="inherit">new blog</Button>
+          }
 
-      </div>
+
+        </Toolbar>
+      </AppBar>
 
       <Routes>
         <Route path='/login' element={<Login
