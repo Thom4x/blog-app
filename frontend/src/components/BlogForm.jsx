@@ -1,5 +1,6 @@
 /* eslint-disable indent */
 import { useState } from 'react'
+import { Button, TextField } from '@mui/material'
 import Message from './Message'
 const BlogForm = ({ createBlog, message, messageType }) => {
     const [typeBlog, setTypeBlog] = useState({ title: '', author: '', url: '' })
@@ -19,43 +20,34 @@ const BlogForm = ({ createBlog, message, messageType }) => {
             <br />
             <h2>Create a new blog</h2>
             <Message message={message} status={messageType} />
-            <form onSubmit={handleBlogForm}>
-                <div>
-                    <label>
-                        title:
-                        <input
-                            type="text"
-                            name="title"
-                            value={typeBlog.title}
-                            onChange={(event) => setTypeBlog({ ...typeBlog, title: event.target.value })}
-                        />
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        author:
-                        <input
-                            type="text"
-                            name="author"
-                            value={typeBlog.author}
-                            onChange={(event) => setTypeBlog({ ...typeBlog, author: event.target.value })}
-                        />
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        url:
-                        <input
-                            type="text"
-                            name="url"
-                            value={typeBlog.url}
-                            onChange={(event) => setTypeBlog({ ...typeBlog, url: event.target.value })}
-                        />
-                    </label>
-                </div>
-                <button type='submit'>Create</button>
+            <form onSubmit={handleBlogForm} style={{ display: 'flex', flexDirection: 'column', width: '240px', gap: '10px' }}>
+                <TextField
+                    label="title:"
+                    type="text"
+                    name="title"
+                    value={typeBlog.title}
+                    onChange={(event) => setTypeBlog({ ...typeBlog, title: event.target.value })}
+                />
+
+                <TextField
+                    label="author:"
+                    type="text"
+                    name="author"
+                    value={typeBlog.author}
+                    onChange={(event) => setTypeBlog({ ...typeBlog, author: event.target.value })}
+                />
+
+                <TextField
+                    label="url:"
+                    type="text"
+                    name="url"
+                    value={typeBlog.url}
+                    onChange={(event) => setTypeBlog({ ...typeBlog, url: event.target.value })}
+                />
+
+                <Button type='submit' variant='contained' style={{ width: '90px' }}>Create</Button>
             </form>
-        </div>
+        </div >
     )
 }
 

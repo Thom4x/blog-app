@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import {
   Routes, Route, Link, useMatch, useNavigate, useParams
 } from 'react-router-dom'
+
 import './App.css'
 import HomePage from './components/HomePage'
 import Blog from './components/Blog'
@@ -153,7 +154,6 @@ const App = () => {
   )
   const match = useMatch('/blogs/:id')
   const blogInFocus = match ? blogs.find(b => b.id === match.params.id) : null
-  console.log('hay', user)
   return (
     <div>
       <div>
