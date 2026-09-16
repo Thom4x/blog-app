@@ -1,11 +1,19 @@
-import { TextField, Button } from '@mui/material'
+import { TextField, Button } from "@mui/material";
 
-const LoginForm = ({ setUsername, setpassword, handleLogin, username, password }) => {
-
+const LoginForm = ({
+  setUsername,
+  setpassword,
+  handleLogin,
+  username,
+  password,
+}) => {
   return (
-    <div >
+    <div>
       <h2>Log in to application</h2>
-      <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', width: '240px' }} >
+      <form
+        onSubmit={handleLogin}
+        style={{ display: "flex", flexDirection: "column", width: "240px" }}
+      >
         <TextField
           variant="standard"
           label="username"
@@ -19,10 +27,16 @@ const LoginForm = ({ setUsername, setpassword, handleLogin, username, password }
           value={password}
           onChange={(event) => setpassword(event.target.value)}
         />
-        <Button type='submit' variant="contained" style={{ marginTop: '10px', width: '70px' }}>Login</Button>
-      </form >
-    </div >
-  )
-}
+        <Button
+          type="submit"
+          variant="contained"
+          style={{ marginTop: "10px", width: "70px" }}
+        >
+          Login
+        </Button>
+      </form>
+    </div>
+  );
+};
 
-export default LoginForm
+export default LoginForm;

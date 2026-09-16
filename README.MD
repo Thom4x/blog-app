@@ -21,6 +21,7 @@ Es un ejemplo clásico de una app full stack con separación clara entre cliente
 ## Tecnologías utilizadas
 
 ### Frontend
+
 - React
 - Vite
 - React Router DOM
@@ -29,6 +30,7 @@ Es un ejemplo clásico de una app full stack con separación clara entre cliente
 - Vitest + Testing Library
 
 ### Backend
+
 - Node.js
 - Express
 - MongoDB
@@ -38,6 +40,7 @@ Es un ejemplo clásico de una app full stack con separación clara entre cliente
 - Supertest
 
 ### Herramientas de desarrollo
+
 - concurrently
 - nodemon
 - ESLint
