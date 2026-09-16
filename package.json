@@ -1,0 +1,30 @@
+{
+  "name": "blogapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "build": "npm run build --prefix client",
+    "start": "cross-env NODE_ENV=production npm start --prefix server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Thom4x/blog-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Thom4x/blog-app/issues"
+  },
+  "homepage": "https://github.com/Thom4x/blog-app#readme",
+  "dependencies": {
+    "concurrently": "^10.0.5"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0"
+  }
+}

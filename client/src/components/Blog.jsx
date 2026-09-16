@@ -1,6 +1,9 @@
 import { Link, useMatch } from 'react-router-dom'
 import Message from './Message'
-import { Button, Container, Typography, Box } from '@mui/material'
+import {
+  Button, Container, Typography, Box, Card,
+  Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
+} from '@mui/material'
 const Blog = ({ blog, updateLikes, removeBlog, user }) => {
   const match = useMatch('/blogs/:id')
   const isDetailPage = match && match.params.id === blog.id
