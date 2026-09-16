@@ -12,19 +12,20 @@ import BlogForm from "./components/BlogForm";
 import Login from "./components/Login";
 import ErrorBoundary from "./components/ErrorBoundary";
 import PageNotFound from "./components/PageNotFound";
-import { useNotificationActions } from "./hooks/useStore";
+import { useNotificationActions, useBlog, useBlogActions } from "./hooks/useStore";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setpassword] = useState("");
   const [user, setUser] = useState(null);
-  const [message, setMessage] = useState(null);
-  const [messageType, setMessageType] = useState("success");
-  const navigate = useNavigate();
+
   const { setNotification, clearNotification } = useNotificationActions()
+  const { getBlogs } = useBlogActions();
+  const navigate = useNavigate();
+
+  const blog = useBlog()
   useEffect(() => {
-    blogService.getAll().then((data) => setBlogs(data));
+    getBlogs();
   }, []);
 
   const handleLogin = async (event) => {
@@ -36,20 +37,20 @@ const App = () => {
       setUsername("");
       setpassword("");
       navigate("/");
-      setNotification(`Welcome BROK ${user.username}`, "success");
+      setNotification(`Welcome BROK ${user.username}`, "success", 2500);
       setTimeout(() => {
         clearNotification();
-      }, 1000);
+      }, 2500);
     } catch (error) {
-      setNotification(`Error en el login: ${error.message}`, "error");
+      setNotification(`Error en el login: ${error.message}`, "error", 2500);
       if (error.response) {
         if (error.response.status === 401) {
-          setNotification(`Invalid username or password`, "error");
+          setNotification(`Invalid username or password`, "error", 2000);
         } else {
-          setNotification("Ocurrió un problema en el servidor.Inténtalo más tarde.");
+          setNotification("Ocurrió un problema en el servidor.Inténtalo más tarde.", "error", 2500);
         }
       } else {
-        setNotification("No se pudo conectar con el servidor. Revisa tu conexión.");
+        setNotification("No se pudo conectar con el servidor. Revisa tu conexión.", "error", 2500);
       }
       setTimeout(() => {
         clearNotification();
@@ -61,32 +62,6 @@ const App = () => {
     blogService.setToken(null);
     localStorage.removeItem("loggedBlogappUser");
     setUser(null);
-  };
-
-  const handleBlogForm = async (data) => {
-    try {
-      const newBlog = await blogService.create(data);
-      setBlogs(blogs.concat(newBlog));
-      setNotification(`A new blog "${newBlog.title}" by ${newBlog.author} added`, "success");
-      navigate("/");
-      setTimeout(() => {
-        clearNotification(null);
-      }, 2000);
-    } catch (error) {
-      console.log("Error CLI:", error);
-      if (error.response.status === 401) {
-        setMessage(
-          "No estas autorizado para crear un blog. Inicia sesión primero.",
-        );
-      } else {
-        setMessage(`Error creating blog ${error}`);
-      }
-      setMessageType("error");
-      setTimeout(() => {
-        setMessage(null);
-        setMessageType("success");
-      }, 3000);
-    }
   };
 
   const updateLikesBtn = async (blog, id) => {
@@ -153,7 +128,7 @@ const App = () => {
   );
   const match = useMatch("/blogs/:id");
   const blogInFocus = match
-    ? blogs.find((b) => b.id === match.params.id)
+    ? blog.find((b) => b.id === match.params.id)
     : null;
   const hoverStyle = { "&:hover": { bgcolor: "rgba(228, 207, 207, 0.32)" } };
   return (
@@ -207,8 +182,6 @@ const App = () => {
             element={
               <Login
                 handleLogin={handleLogin}
-                message={message}
-                messageType={messageType}
                 password={password}
                 setUsername={setUsername}
                 setpassword={setpassword}
@@ -222,7 +195,6 @@ const App = () => {
               <HomePage
                 user={user}
                 blogForm={blogForm}
-                blogs={blogs}
                 updateLikesBtn={updateLikesBtn}
                 removeBlog={removeBlog}
                 logout={logout}
@@ -237,8 +209,6 @@ const App = () => {
                 updateLikes={updateLikesBtn}
                 removeBlog={removeBlog}
                 username={user}
-                message={message}
-                messageType={messageType}
                 user={user}
               />
             }
@@ -246,16 +216,16 @@ const App = () => {
           <Route
             path="/create"
             element={
-              <BlogForm
-                createBlog={handleBlogForm}
-                message={message}
-                messageType={messageType}
-              />
+              <BlogForm />
             }
           ></Route>
-          <Route path="*" element={<PageNotFound />}></Route>
-        </Routes>
+          <Route
+            path="*"
+            element={
+              <PageNotFound />}>
+          </Route>
 
+        </Routes>
       </ErrorBoundary>
 
       <div></div>

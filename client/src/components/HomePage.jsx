@@ -1,12 +1,12 @@
 import Blog from "./Blog";
+import { useBlog } from '../hooks/useStore'
 const HomePage = ({
     user,
-    blogs,
     updateLikesBtn,
     removeBlog,
 }) => {
+    const blogs = useBlog()
     const toSortedBlogs = blogs.toSorted((a, b) => b.likes - a.likes);
-
     return (
         <div>
             <h2>blogs</h2>

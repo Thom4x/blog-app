@@ -1,28 +1,36 @@
 /* eslint-disable indent */
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, TextField } from "@mui/material";
-import Message from "./Message";
-import { useNotificationActions } from "../hooks/useStore";
+import { useNotificationActions, useBlogActions } from "../hooks/useStore";
 
-const BlogForm = ({ createBlog }) => {
-  const { setNotification, clearNotification } = useNotificationActions()
+const BlogForm = () => {
   const [typeBlog, setTypeBlog] = useState({ title: "", author: "", url: "" });
-  const handleBlogForm = (event) => {
+
+  const { setNotification, clearNotification } = useNotificationActions()
+  const { createBlog } = useBlogActions()
+  const navigate = useNavigate();
+
+  const handleBlogForm = async (event) => {
     event.preventDefault();
     if (!typeBlog.title || !typeBlog.author || !typeBlog.url) {
       setNotification('No puedes crear un blog vacio, ingresa contenido en los tres', 'error');
       setTimeout(() => {
         clearNotification()
       }, 1500)
-      return null
 
     } else {
-      createBlog({
-        title: typeBlog.title,
-        author: typeBlog.author,
-        url: typeBlog.url,
-      });
-      setTypeBlog("");
+      try {
+        const newBlog = {
+          title: typeBlog.title,
+          author: typeBlog.author,
+          url: typeBlog.url,
+        }
+        createBlog(newBlog)
+        navigate("/");
+      } catch (error) {
+        console.log(error)
+      }
     }
   };
 

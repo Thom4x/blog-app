@@ -5,6 +5,7 @@ import {
   Box,
 
 } from "@mui/material";
+
 const Blog = ({ blog, updateLikes, removeBlog, user }) => {
   const match = useMatch("/blogs/:id");
   const isDetailPage = match && match.params.id === blog.id;
