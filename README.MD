@@ -258,17 +258,6 @@ Este repositorio refleja varios conceptos importantes del curso:
 
 ---
 
-## Consejos para seguir aprendiendo
-
-- añade validación más estricta de formularios
-- mejora la experiencia de usuario con toast notifications
-- implementa paginación y filtros por autor o fecha
-- añade edición de blogs
-- separa mejor la lógica de negocio en servicios y utilidades
-- añade tests para casos límite y errores de autenticación
-
----
-
 ## Créditos
 
 Proyecto desarrollado en el contexto del curso Full Stack Open, con enfoque en la construcción de una aplicación web full stack completa.
@@ -277,4 +266,4 @@ Proyecto desarrollado en el contexto del curso Full Stack Open, con enfoque en l
 
 ## Autor
 
-Este proyecto forma parte del aprendizaje personal del autor y puede adaptarse y ampliarse según el progreso del curso.
+Tomas Holguin Serna - Thom4x
