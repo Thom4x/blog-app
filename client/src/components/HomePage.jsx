@@ -2,6 +2,7 @@ import Message from './Message'
 import Blog from './Blog'
 const HomePage = ({ message, messageType, user, blogs, updateLikesBtn, removeBlog }) => {
 
+
     const toSortedBlogs = blogs
         .toSorted((a, b) => b.likes - a.likes)
 

@@ -12,6 +12,7 @@ import Message from './components/Message'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 import Login from './components/Login'
+import ErrorBoundary from './ErrorBoundary'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -176,48 +177,50 @@ const App = () => {
 
         </Toolbar>
       </AppBar>
-
-      <Routes>
-        <Route path='/login' element={<Login
-          handleLogin={handleLogin}
-          message={message}
-          messageType={messageType}
-          password={password}
-          setUsername={setUsername}
-          setpassword={setpassword}
-          username={username}
-        />}></Route>
-        <Route path='/' element={
-          <HomePage
+      <ErrorBoundary>
+        <Routes>
+          <Route path='/login' element={<Login
+            handleLogin={handleLogin}
+            message={message}
+            messageType={messageType}
+            password={password}
+            setUsername={setUsername}
+            setpassword={setpassword}
+            username={username}
+          />}></Route>
+          <Route path='/' element={
+            <HomePage
+              message={message}
+              messageType={messageType}
+              user={user}
+              blogForm={blogForm}
+              blogs={blogs}
+              updateLikesBtn={updateLikesBtn}
+              removeBlog={removeBlog}
+              logout={logout}
+            />
+          }></Route>
+          <Route path='/blogs/:id' element={<Blog
+            blog={blogInFocus}
+            updateLikes={updateLikesBtn}
+            removeBlog={removeBlog}
+            username={user}
             message={message}
             messageType={messageType}
             user={user}
-            blogForm={blogForm}
-            blogs={blogs}
-            updateLikesBtn={updateLikesBtn}
-            removeBlog={removeBlog}
-            logout={logout}
-          />
-        }></Route>
-        <Route path='/blogs/:id' element={<Blog
-          blog={blogInFocus}
-          updateLikes={updateLikesBtn}
-          removeBlog={removeBlog}
-          username={user}
-          message={message}
-          messageType={messageType}
-          user={user}
-        />}></Route>
-        <Route path='/create' element={<BlogForm
-          createBlog={handleBlogForm}
-          message={message}
-          messageType={messageType}
-        />}></Route>
-      </Routes>
-
+          />}></Route>
+          <Route path='/create' element={
+            <BlogForm
+              createBlog={handleBlogForm}
+              message={message}
+              messageType={messageType}
+            />
+          }></Route>
+        </Routes>
+      </ErrorBoundary>
       <div>
       </div >
-    </div>
+    </div >
   )
 }
 
