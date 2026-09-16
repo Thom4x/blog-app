@@ -1,15 +1,9 @@
 import { Link, useMatch } from 'react-router-dom'
 import {
   Button,
-  Container,
   Typography,
   Box,
-  Card,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
+
 } from "@mui/material";
 const Blog = ({ blog, updateLikes, removeBlog, user }) => {
   const match = useMatch("/blogs/:id");

@@ -2,23 +2,34 @@
 import { useState } from "react";
 import { Button, TextField } from "@mui/material";
 import Message from "./Message";
-const BlogForm = ({ createBlog, message, messageType }) => {
+import { useNotificationActions } from "../hooks/useStore";
+
+const BlogForm = ({ createBlog }) => {
+  const { setNotification, clearNotification } = useNotificationActions()
   const [typeBlog, setTypeBlog] = useState({ title: "", author: "", url: "" });
   const handleBlogForm = (event) => {
     event.preventDefault();
-    createBlog({
-      title: typeBlog.title,
-      author: typeBlog.author,
-      url: typeBlog.url,
-    });
-    setTypeBlog("");
+    if (!typeBlog.title || !typeBlog.author || !typeBlog.url) {
+      setNotification('No puedes crear un blog vacio, ingresa contenido en los tres', 'error');
+      setTimeout(() => {
+        clearNotification()
+      }, 1500)
+      return null
+
+    } else {
+      createBlog({
+        title: typeBlog.title,
+        author: typeBlog.author,
+        url: typeBlog.url,
+      });
+      setTypeBlog("");
+    }
   };
 
   return (
     <div>
       <br />
       <h2>Create a new blog</h2>
-      <Message message={message} status={messageType} />
       <form
         onSubmit={handleBlogForm}
         style={{

@@ -12,6 +12,7 @@ import BlogForm from "./components/BlogForm";
 import Login from "./components/Login";
 import ErrorBoundary from "./components/ErrorBoundary";
 import PageNotFound from "./components/PageNotFound";
+import { useNotificationActions } from "./hooks/useStore";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -21,6 +22,7 @@ const App = () => {
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState("success");
   const navigate = useNavigate();
+  const { setNotification, clearNotification } = useNotificationActions()
   useEffect(() => {
     blogService.getAll().then((data) => setBlogs(data));
   }, []);
@@ -34,26 +36,24 @@ const App = () => {
       setUsername("");
       setpassword("");
       navigate("/");
-      setMessage(`Welcome ${user.username}`);
+      setNotification(`Welcome BROK ${user.username}`, "success");
       setTimeout(() => {
-        setMessage(null);
+        clearNotification();
       }, 1000);
     } catch (error) {
-      console.log("Error CLI:", error);
-      setMessageType("error");
+      setNotification(`Error en el login: ${error.message}`, "error");
       if (error.response) {
         if (error.response.status === 401) {
-          setMessage("Invalid username or password");
+          setNotification(`Invalid username or password`, "error");
         } else {
-          setMessage("Ocurrió un problema en el servidor.Inténtalo más tarde.");
+          setNotification("Ocurrió un problema en el servidor.Inténtalo más tarde.");
         }
       } else {
-        setMessage("No se pudo conectar con el servidor. Revisa tu conexión.");
+        setNotification("No se pudo conectar con el servidor. Revisa tu conexión.");
       }
       setTimeout(() => {
-        setMessage(null);
-        setMessageType("success");
-      }, 1000);
+        clearNotification();
+      }, 2000);
     }
   };
 
@@ -67,10 +67,10 @@ const App = () => {
     try {
       const newBlog = await blogService.create(data);
       setBlogs(blogs.concat(newBlog));
-      setMessage(`A new blog "${newBlog.title}" by ${newBlog.author} added`);
+      setNotification(`A new blog "${newBlog.title}" by ${newBlog.author} added`, "success");
       navigate("/");
       setTimeout(() => {
-        setMessage(null);
+        clearNotification(null);
       }, 2000);
     } catch (error) {
       console.log("Error CLI:", error);
@@ -196,7 +196,10 @@ const App = () => {
             </Button>
           )}
         </Toolbar>
+
       </AppBar>
+      <br />
+      <Message />
       <ErrorBoundary>
         <Routes>
           <Route
@@ -217,8 +220,6 @@ const App = () => {
             path="/"
             element={
               <HomePage
-                message={message}
-                messageType={messageType}
                 user={user}
                 blogForm={blogForm}
                 blogs={blogs}
@@ -254,7 +255,9 @@ const App = () => {
           ></Route>
           <Route path="*" element={<PageNotFound />}></Route>
         </Routes>
+
       </ErrorBoundary>
+
       <div></div>
     </div>
   );
