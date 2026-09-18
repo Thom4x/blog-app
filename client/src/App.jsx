@@ -1,71 +1,47 @@
-import { useState, useEffect } from "react";
-import { Routes, Route, Link, useMatch, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Routes, Route, Link, useMatch } from "react-router-dom";
 import { Container, AppBar, Toolbar, Button, Typography } from "@mui/material";
 import "./App.css";
 import HomePage from "./components/HomePage";
 import Blog from "./components/Blog";
-import blogService from "./services/blogs";
 import Message from "./components/Message";
-import Togglable from "./components/Togglable";
 import BlogForm from "./components/BlogForm";
 import Login from "./components/Login";
 import ErrorBoundary from "./components/ErrorBoundary";
 import PageNotFound from "./components/PageNotFound";
-import { useNotificationActions, useBlog, useBlogActions } from "./hooks/useStore";
-
+import { useBlog, useBlogActions, useBlogLoading, useUser, useUserActions } from "./hooks/useStore";
+import blogService from "./services/blogs";
 const App = () => {
-  const [username, setUsername] = useState("");
-  const [password, setpassword] = useState("");
-  const [user, setUser] = useState(null);
-
-  const { setNotification, clearNotification } = useNotificationActions()
   const { getBlogs } = useBlogActions();
-  const navigate = useNavigate();
-
-  const blog = useBlog()
+  const user = useUser();
+  const { clearUser, setUsers } = useUserActions();
+  const blog = useBlog();
+  const blogLoading = useBlogLoading();
   useEffect(() => {
     getBlogs();
   }, [getBlogs]);
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    try {
-      const user = await blogService.login({ username, password });
-      blogService.setToken(user.token);
-      setUser(user.username);
-      setUsername("");
-      setpassword("");
-      navigate("/");
-      setNotification(`Welcome BROK ${user.username}`, "success", 2500);
-      setTimeout(() => {
-        clearNotification();
-      }, 2500);
-    } catch (error) {
-      setNotification(`Error en el login: ${error.message}`, "error", 2500);
-      if (error.response) {
-        if (error.response.status === 401) {
-          setNotification(`Invalid username or password`, "error", 2000);
-        } else {
-          setNotification("Ocurrió un problema en el servidor.Inténtalo más tarde.", "error", 2500);
-        }
-      } else {
-        setNotification("No se pudo conectar con el servidor. Revisa tu conexión.", "error", 2500);
-      }
-      setTimeout(() => {
-        clearNotification();
-      }, 2000);
+  useEffect(() => {
+    const loggedUserJSON = localStorage.getItem("loggedBlogappUser");
+
+    if (!loggedUserJSON) {
+      return;
     }
-  };
+
+    try {
+      const loggedUser = JSON.parse(loggedUserJSON);
+      blogService.setToken(loggedUser.token);
+      setUsers(loggedUser.username);
+    } catch {
+      localStorage.removeItem("loggedBlogappUser");
+    }
+  }, [setUsers]);
 
   const logout = () => {
     blogService.setToken(null);
     localStorage.removeItem("loggedBlogappUser");
-    setUser(null);
+    clearUser(null);
   };
-
-
-
-
 
   const match = useMatch("/blogs/:id");
   const blogInFocus = match
@@ -123,34 +99,28 @@ const App = () => {
           <Route
             path="/login"
             element={
-              <Login
-                handleLogin={handleLogin}
-                password={password}
-                setUsername={setUsername}
-                setpassword={setpassword}
-                username={username}
-              />
+              <Login />
             }
           ></Route>
           <Route
             path="/"
             element={
               <HomePage
-                user={user}
-                logout={logout}
               />
             }
           ></Route>
           <Route
             path="/blogs/:id"
             element={
-              <Blog
-                blog={blogInFocus}
-                username={user}
-                user={user}
-              />
+              blogLoading ? (
+                <p>Loading...</p>
+              ) : blogInFocus ? (
+                <Blog blog={blogInFocus} />
+              ) : (
+                <PageNotFound />
+              )
             }
-          ></Route>
+          />
           <Route
             path="/create"
             element={
@@ -167,7 +137,7 @@ const App = () => {
       </ErrorBoundary>
 
       <div></div>
-    </div>
+    </div >
   );
 };
 

@@ -27,7 +27,6 @@ const BlogForm = () => {
           url: typeBlog.url,
         }
         createBlog(newBlog)
-        navigate("/");
       } catch (error) {
         console.log(error)
       }

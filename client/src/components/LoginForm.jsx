@@ -2,10 +2,11 @@ import { TextField, Button } from "@mui/material";
 
 const LoginForm = ({
   setUsername,
-  setpassword,
+  setPassword,
   handleLogin,
   username,
   password,
+  isLoading,
 }) => {
   return (
     <div>
@@ -17,19 +18,26 @@ const LoginForm = ({
         <TextField
           variant="standard"
           label="username"
+          name="username"
+          autoComplete="username"
+          required
           value={username}
           onChange={(event) => setUsername(event.target.value)}
         />
         <TextField
           variant="standard"
           label="password"
+          name="password"
+          autoComplete="current-password"
+          required
           type="password"
           value={password}
-          onChange={(event) => setpassword(event.target.value)}
+          onChange={(event) => setPassword(event.target.value)}
         />
         <Button
           type="submit"
           variant="contained"
+          disabled={isLoading}
           style={{ marginTop: "10px", width: "70px" }}
         >
           Login

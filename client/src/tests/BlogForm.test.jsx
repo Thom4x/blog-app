@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import BlogForm from "./BlogForm";
+import BlogForm from "../components/BlogForm";
 import { expect } from "vitest";
 import userEvent from "@testing-library/user-event";
 

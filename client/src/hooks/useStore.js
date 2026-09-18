@@ -1,7 +1,5 @@
 import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
 import blogService from "../services/blogs";
-
 const logger = (config) => (set, get) => config(
     (...args) => {
         console.log('prev state', get());
@@ -11,7 +9,15 @@ const logger = (config) => (set, get) => config(
     get
 );
 
-const useNotificationStore = create(logger((set) => ({
+const userStore = create(logger((set) => ({
+    user: null,
+    actions: {
+        setUsers: (user) => set({ user: user }),
+        clearUser: () => set({ user: null })
+    }
+}), { name: 'userStore' }))
+
+const useNotificationStore = create((set) => ({
     notification: {
         message: '',
         type: ''
@@ -25,19 +31,21 @@ const useNotificationStore = create(logger((set) => ({
         },
         clearNotification: () => set({ notification: { message: '', type: '' } })
     }
-}), { name: 'NotificationStore' }))
+}), { name: 'NotificationStore' })
 
 
-
-
-const useBlogStore = create(logger((set, get) => ({
+const useBlogStore = create((set, get) => ({
     blog: [],
+    blogLoading: false,
     actions: {
         getBlogs: async () => {
-            const data = await blogService.getAll();
-            set(() => ({
-                blog: data
-            }))
+            set({ blogLoading: true });
+            try {
+                const data = await blogService.getAll();
+                set({ blog: data });
+            } finally {
+                set({ blogLoading: false });
+            }
         },
         createBlog: async (blog) => {
             const { setNotification } = useNotificationStore.getState().actions
@@ -70,11 +78,12 @@ const useBlogStore = create(logger((set, get) => ({
             const blog = get().blog.find(n => n.id === id)
             if (window.confirm(`Deseas eliminar este blog? ${id}`)) {
                 try {
-                    const deleteBlog = await blogService.deleteBlog(id)
+                    await blogService.deleteBlog(id)
                     set((state) => ({
                         blog: state.blog
                             .filter(b => b.id !== id) // filtrar solo blogs que no sean iguales al id que se eliminó
                     }))
+                    navigation.navigate("/"); // redirigir a la página principal después de eliminar el blog
                     setNotification(`Blog Delete successfully: ${blog.title}`, 'success', 2500)
                 } catch (error) {
                     setNotification(`Error Deleting blog: ${error.message}`, 'error', 2500)
@@ -82,10 +91,14 @@ const useBlogStore = create(logger((set, get) => ({
             }
         }
     }
-}), { name: 'BlogStore' }))
+}), { name: 'BlogStore' })
 
 export const useBlog = () => useBlogStore(state => state.blog)
+export const useBlogLoading = () => useBlogStore(state => state.blogLoading)
 export const useBlogActions = () => useBlogStore(state => state.actions)
 export const useNotificationActions = () => useNotificationStore((state) => state.actions)
 
 export const useNotification = () => useNotificationStore(state => state.notification)
+
+export const useUser = () => userStore(state => state.user)
+export const useUserActions = () => userStore(state => state.actions)

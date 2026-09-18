@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import Blog from "./Blog";
+import Blog from "../components/Blog";
 
 const blog = {
   id: "1",

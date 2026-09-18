@@ -1,13 +1,11 @@
 import { Link, useMatch, useNavigate } from 'react-router-dom'
 import { Button, Typography, Box } from "@mui/material";
-import { useBlogActions } from '../hooks/useStore';
-import { useBlog } from '../hooks/useStore';
+import { useBlogActions, useUser } from '../hooks/useStore';
 
-const Blog = ({ blog, user }) => {
+const Blog = ({ blog }) => {
   const { likeBlog, deleteBlog } = useBlogActions()
-
+  const user = useUser()
   const navigate = useNavigate()
-
   const match = useMatch("/blogs/:id");
   const isDetailPage = match && match.params.id === blog?.id;
 
