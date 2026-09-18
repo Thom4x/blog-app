@@ -5,7 +5,6 @@ import "./App.css";
 import HomePage from "./components/HomePage";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
-import LoginForm from "./components/LoginForm";
 import Message from "./components/Message";
 import Togglable from "./components/Togglable";
 import BlogForm from "./components/BlogForm";
@@ -26,7 +25,7 @@ const App = () => {
   const blog = useBlog()
   useEffect(() => {
     getBlogs();
-  }, []);
+  }, [getBlogs]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -64,72 +63,16 @@ const App = () => {
     setUser(null);
   };
 
-  const updateLikesBtn = async (blog, id) => {
-    try {
-      const updatedBlog = {
-        ...blog,
-        likes: blog.likes + 1,
-      };
-      const returnedBlog = await blogService.update(id, updatedBlog);
-      setBlogs(blogs.map((b) => (b._id !== blog._id ? b : returnedBlog)));
-      setMessage("Up!");
-      setTimeout(() => {
-        setMessage(null);
-      }, 1000);
-    } catch (error) {
-      console.log("Error Likes", error);
-      setMessage(`Like update Error ${error}`);
-      setMessageType("error");
-      setTimeout(() => {
-        setMessage(null);
-        setMessageType("success");
-      }, 2000);
-    }
-  };
 
-  const removeBlog = async (id) => {
-    if (window.confirm(`Deseas eliminar este blog? ${id}`)) {
-      try {
-        const eliminated = await blogService.deleteBlog(id);
-        console.log("Yes, eliminated", eliminated);
-        navigate("/");
-        setBlogs(blogs.filter((b) => b._id !== id));
-        setMessage(
-          `Has eliminado el blog: ${blogs.find((b) => b._id === id).title}`,
-        );
-        setTimeout(() => {
-          setMessage(null);
-          setMessageType("success");
-        }, 5000);
-      } catch (error) {
-        console.log("Error deleting blog", error);
-        setMessageType("error");
-        if (error.response) {
-          if (error.response.status === 401) {
-            setMessage("No estas autorizado para eliminar este blog");
-          } else {
-            setMessage(
-              "Ocurrió un problema en el servidor.Inténtalo más tarde.",
-            );
-          }
-        }
-        setTimeout(() => {
-          setMessage(null);
-          setMessageType("success");
-        }, 1000);
-      }
-    }
-  };
 
-  const blogForm = () => (
-    <Togglable buttonLabel="create blog">
-      <BlogForm createBlog={handleBlogForm} />
-    </Togglable>
-  );
+
+
   const match = useMatch("/blogs/:id");
   const blogInFocus = match
     ? blog.find((b) => b.id === match.params.id)
     : null;
+
+
   const hoverStyle = { "&:hover": { bgcolor: "rgba(228, 207, 207, 0.32)" } };
   return (
     <div>
@@ -194,9 +137,6 @@ const App = () => {
             element={
               <HomePage
                 user={user}
-                blogForm={blogForm}
-                updateLikesBtn={updateLikesBtn}
-                removeBlog={removeBlog}
                 logout={logout}
               />
             }
@@ -206,8 +146,6 @@ const App = () => {
             element={
               <Blog
                 blog={blogInFocus}
-                updateLikes={updateLikesBtn}
-                removeBlog={removeBlog}
                 username={user}
                 user={user}
               />

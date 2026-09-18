@@ -30,7 +30,7 @@ const useNotificationStore = create(logger((set) => ({
 
 
 
-const useBlogStore = create(devtools((set) => ({
+const useBlogStore = create(logger((set, get) => ({
     blog: [],
     actions: {
         getBlogs: async () => {
@@ -50,8 +50,37 @@ const useBlogStore = create(devtools((set) => ({
             } catch (error) {
                 setNotification(`Error creating blog: ${error.message}`, 'error', 2500)
             }
+        },
+        likeBlog: async (id) => {
+            const { setNotification } = useNotificationStore.getState().actions
+            const blog = get().blog.find(n => n.id === id)
+            try {
+                const update = await blogService.update(id, { ...blog, likes: blog.likes + 1 });
+                set((state) => ({
+                    blog: state.blog
+                        .map(a => a.id === id ? update : a)
+                }))
+                setNotification(`Blog liked successfully: ${update.title}`, 'success', 2500)
+            } catch (error) {
+                setNotification(`Error liking blog: ${error.message}`, 'error', 2500)
+            }
+        },
+        deleteBlog: async (id) => {
+            const { setNotification } = useNotificationStore.getState().actions
+            const blog = get().blog.find(n => n.id === id)
+            if (window.confirm(`Deseas eliminar este blog? ${id}`)) {
+                try {
+                    const deleteBlog = await blogService.deleteBlog(id)
+                    set((state) => ({
+                        blog: state.blog
+                            .filter(b => b.id !== id) // filtrar solo blogs que no sean iguales al id que se eliminó
+                    }))
+                    setNotification(`Blog Delete successfully: ${blog.title}`, 'success', 2500)
+                } catch (error) {
+                    setNotification(`Error Deleting blog: ${error.message}`, 'error', 2500)
+                }
+            }
         }
-
     }
 }), { name: 'BlogStore' }))
 
