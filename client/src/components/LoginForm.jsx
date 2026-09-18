@@ -1,13 +1,12 @@
 import { TextField, Button } from "@mui/material";
 
 const LoginForm = ({
-  setUsername,
-  setPassword,
   handleLogin,
-  username,
-  password,
   isLoading,
+  name,
+  password
 }) => {
+
   return (
     <div>
       <h2>Log in to application</h2>
@@ -21,8 +20,7 @@ const LoginForm = ({
           name="username"
           autoComplete="username"
           required
-          value={username}
-          onChange={(event) => setUsername(event.target.value)}
+          {...name}
         />
         <TextField
           variant="standard"
@@ -30,9 +28,7 @@ const LoginForm = ({
           name="password"
           autoComplete="current-password"
           required
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
+          {...password}
         />
         <Button
           type="submit"

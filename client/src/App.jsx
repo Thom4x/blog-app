@@ -11,35 +11,32 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import PageNotFound from "./components/PageNotFound";
 import { useBlog, useBlogActions, useBlogLoading, useUser, useUserActions } from "./hooks/useStore";
 import blogService from "./services/blogs";
+import { persistentUser } from "./services/persistentUser";
 const App = () => {
   const { getBlogs } = useBlogActions();
-  const user = useUser();
   const { clearUser, setUsers } = useUserActions();
+
   const blog = useBlog();
   const blogLoading = useBlogLoading();
+  const user = useUser();
+
   useEffect(() => {
     getBlogs();
   }, [getBlogs]);
 
   useEffect(() => {
-    const loggedUserJSON = localStorage.getItem("loggedBlogappUser");
-
-    if (!loggedUserJSON) {
-      return;
-    }
-
+    const userJSON = persistentUser.getUserLocalStorage();
     try {
-      const loggedUser = JSON.parse(loggedUserJSON);
-      blogService.setToken(loggedUser.token);
-      setUsers(loggedUser.username);
+      blogService.setToken(userJSON.token);
+      setUsers(userJSON.username);
     } catch {
-      localStorage.removeItem("loggedBlogappUser");
+      persistentUser.removeUserLocalStorage();
     }
   }, [setUsers]);
 
   const logout = () => {
     blogService.setToken(null);
-    localStorage.removeItem("loggedBlogappUser");
+    persistentUser.removeUserLocalStorage();
     clearUser(null);
   };
 

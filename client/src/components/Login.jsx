@@ -4,59 +4,51 @@ import { useState } from "react";
 import blogService from '../services/blogs'
 import { useNotificationActions, useUserActions } from "../hooks/useStore";
 import { useNavigate } from "react-router-dom";
+import { persistentUser } from "../services/persistentUser";
+import { useField } from "../hooks/useField";
 const Login = () => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+
+    const name = useField('text')
+    const password = useField('password')
+
     const { setUsers } = useUserActions()
     const { setNotification } = useNotificationActions()
     const navigate = useNavigate()
 
     const handleLogin = async (event) => {
         event.preventDefault();
-
-        if (!username.trim() || !password) {
+        if (!name.value.trim() || !password.value.trim()) {
             setNotification("Username y password son obligatorios", "error");
             return;
         }
-
         setIsLoading(true);
         try {
-            const userLogin = await blogService.login({ username, password });
+            const userLogin = await blogService.login({ username: name.value, password: password.value });
             blogService.setToken(userLogin.token);
-            localStorage.setItem("loggedBlogappUser", JSON.stringify(userLogin));
-
+            persistentUser.setUserLocalStorage(userLogin)
             setUsers(userLogin.username);
-
-            setUsername("");
-            setPassword("");
             navigate("/");
             setNotification(`Welcome ${userLogin.username}`, "success");
         } catch (error) {
             let message = "Ocurrió un problema al iniciar sesión.";
-
             if (!error.response) {
                 message = "No se pudo conectar con el servidor.";
             } else if (error.response.status === 401) {
                 message = "Username o password incorrectos.";
             }
-
             setNotification(message, "error");
         } finally {
             setIsLoading(false);
         }
     }
 
-
-
     const loginForm = () => (
         <Togglable buttonLabel="login">
             <LoginForm
                 handleLogin={handleLogin}
+                name={name}
                 password={password}
-                setUsername={setUsername}
-                setPassword={setPassword}
-                username={username}
                 isLoading={isLoading}
             />
         </Togglable>
