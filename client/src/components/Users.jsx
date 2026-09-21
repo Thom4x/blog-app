@@ -10,6 +10,7 @@ import Paper from '@mui/material/Paper';
 import {
     Typography
 } from '@mui/material';
+import DetailUser from './DetailUser';
 
 const Users = () => {
     const userList = useUserList()
@@ -37,7 +38,7 @@ const Users = () => {
                         {rows?.map((row) => (
                             <TableRow key={row.username}>
                                 <TableCell component="th" scope="row">
-                                    {row.name}
+                                    <DetailUser user={userList.find((u) => u.username === row.username)} />
                                 </TableCell>
                                 <TableCell>{row.username}</TableCell>
                                 <TableCell>{row.blogs}</TableCell>

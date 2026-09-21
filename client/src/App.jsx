@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Routes, Route, Link, useMatch } from "react-router-dom";
 import { Container, AppBar, Toolbar, Button, Typography } from "@mui/material";
 import "./App.css";
@@ -10,14 +10,16 @@ import Login from "./components/Login";
 import ErrorBoundary from "./components/ErrorBoundary";
 import PageNotFound from "./components/PageNotFound";
 import Users from "./components/Users";
-import { useBlog, useBlogActions, useBlogLoading, useUser, useUserActions } from "./hooks/useStore";
+import { useBlog, useBlogActions, useBlogLoading, useUser, useUserActions, useUserList } from "./hooks/useStore";
 import blogService from "./services/blogs";
 import { persistentUser } from "./services/persistentUser";
+import DetailUser from "./components/DetailUser";
 const App = () => {
   const { getBlogs } = useBlogActions();
   const { clearUser, setUsers, initializeUsers } = useUserActions();
 
   const blog = useBlog();
+  const userList = useUserList()
   const blogLoading = useBlogLoading();
   const user = useUser();
 
@@ -53,6 +55,10 @@ const App = () => {
     ? blog.find((b) => b.id === match.params.id)
     : null;
 
+  const matchUsers = useMatch("/users/:id");
+  const UserInFocus = matchUsers
+    ? userList.find((u) => u.id === matchUsers.params.id)
+    : null;
 
   const hoverStyle = { "&:hover": { bgcolor: "rgba(228, 207, 207, 0.32)" } };
   return (
@@ -135,6 +141,7 @@ const App = () => {
               )
             }
           />
+
           <Route
             path="/create"
             element={
@@ -147,6 +154,16 @@ const App = () => {
               <Users />
             }
           ></Route>
+          <Route
+            path="/users/:id"
+            element={
+              UserInFocus ? (
+                <DetailUser user={UserInFocus} />
+              ) : (
+                <PageNotFound />
+              )
+            }
+          />
           <Route
             path="*"
             element={
