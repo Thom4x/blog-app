@@ -75,7 +75,20 @@ const Blog = ({ blog }) => {
                     remove
                   </Button>
                 )}
+
               </div>
+              <br />
+              <Typography variant="h5">comments</Typography>
+              {blog.comments.length > 0 ?
+                <ul>
+                  {blog.comments?.map((u) =>
+                    <li key={u._id}><Typography variant="subtitle1">{u.text}</Typography></li>
+                  )
+                  }
+                </ul>
+                :
+                <p>Este blog no tiene comentarios</p>
+              }
             </Box>
           </div>
         ) : (

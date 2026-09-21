@@ -17,6 +17,32 @@ blogRouter.get("/", async (request, response) => {
   //    })
 });
 
+blogRouter.post("/:id/comments", async (request, response) => {
+  try {
+    const { text } = request.body;
+
+    if (!text || text.trim() === "") {
+      return response.status(400).json({ error: "comments are required" });
+    }
+
+    // Asegúrate de mandar un objeto si tu schema espera un objeto con { text }
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      request.params.id,
+      { $push: { comments: { text } } },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedBlog) {
+      return response.status(404).json({ error: "blog not found" });
+    }
+
+    response.json(updatedBlog);
+  } catch (error) {
+    console.error("Error al guardar comentario:", error.message);
+    response.status(400).json({ error: "malformatted id or request error" });
+  }
+});
+
 blogRouter.post("/", async (request, response) => {
   const body = request.body;
   // Obtener el usuario autenticado del objeto de solicitud
@@ -100,5 +126,7 @@ blogRouter.put("/:id", async (request, response) => {
     response.status(404).end();
   }
 });
+
+
 
 module.exports = blogRouter;

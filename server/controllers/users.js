@@ -40,4 +40,23 @@ userRouter.post("/", async (request, response) => {
   response.status(201).json(savedUser);
 });
 
+userRouter.put("/:id/comments", async (request, response) => {
+  const { comments } = request.body;
+
+  // Update the likes of the blog with the given ID
+  const updatedBlog = await Blog.findByIdAndUpdate(
+    request.params.id,
+    { comments },
+    { new: true, runValidators: true, context: "query" },
+  ).populate("user", { username: 1, name: 1 });
+
+  console.log("Updated blog:", updatedBlog);
+
+  if (updatedBlog) {
+    response.json(updatedBlog);
+  } else {
+    response.status(404).end();
+  }
+});
+
 module.exports = userRouter;

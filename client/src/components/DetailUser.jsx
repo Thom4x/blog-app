@@ -28,21 +28,18 @@ const DetailUser = ({ user }) => {
                         >
                             <Typography variant="h5">{user.name}</Typography>
                             <Typography variant="subtitle1">Added Blogs</Typography>
-                            {
-                                !user.blogs ?
-                                    <p>Nada</p>
-                                    :
-                                    <ul>
-                                        {
-                                            user.blogs.map((u) =>
-                                                <li key={u.id}>
-                                                    <Typography variant="body2">{u.title}</Typography>
-                                                </li>
-                                            )
-                                        }
 
-                                    </ul>
-                            }
+                            {user.blogs.length === 0 ? (
+                                <Typography variant="subtitle1">Este usuario no tiene blogs creados</Typography>
+                            ) : (
+                                <ul>
+                                    {user.blogs?.map((u) => (
+                                        <li key={u.id}>
+                                            <Typography variant="body2">{u.title}</Typography>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </Box>
                     </div >
                 ) : (
