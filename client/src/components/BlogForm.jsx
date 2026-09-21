@@ -1,5 +1,5 @@
 /* eslint-disable indent */
-import { Button, TextField } from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import { useNotificationActions, useBlogActions } from "../hooks/useStore";
 import { useField } from "../hooks/useField";
 import { useNavigate } from "react-router-dom";
@@ -39,7 +39,8 @@ const BlogForm = () => {
   return (
     <div>
       <br />
-      <h2>Create a new blog</h2>
+      <Typography variant="h5">Create a new blog</Typography>
+      <br />
       <form
         onSubmit={handleBlogForm}
         style={{

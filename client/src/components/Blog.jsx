@@ -122,7 +122,15 @@ const Blog = ({ blog }) => {
         ) : (
           <div>
             <div style={blogStyle} data-testid="blog">
-              <Link to={`/blogs/${blog?.id}`}>
+              <Link
+                to={`/blogs/${blog?.id}`}
+                style={{
+                  color: '#1f1f1f',
+                  textDecoration: 'none',
+                  fontWeight: 500,
+                  fontStyle: 'italic',
+                }}
+              >
                 {blog?.title} - {blog?.author}
               </Link>
             </div>

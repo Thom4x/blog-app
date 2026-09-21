@@ -24,7 +24,6 @@ const App = () => {
   const user = useUser();
 
   useEffect(() => {
-    // 1. Lógica de autenticación / token del usuario
     try {
       getBlogs();
       initializeUsers();
@@ -39,9 +38,6 @@ const App = () => {
     } catch {
       persistentUser.removeUserLocalStorage();
     }
-
-    // 2. Carga de datos
-
   }, [getBlogs, setUsers, initializeUsers]);
 
   const logout = () => {
@@ -150,6 +146,7 @@ const App = () => {
           ></Route>
           <Route
             path="/users"
+
             element={
               <Users />
             }

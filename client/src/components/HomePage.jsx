@@ -11,10 +11,10 @@ const HomePage = () => {
                 <div>
                     <ul>
                         {blogs?.map((blog) => (
-                            <li key={blog?.id}>
-                                <Blog
-                                    blog={blog}
-                                />
+                            <li key={blog?.id} style={{ textDecoration: 'none', color: 'black' }}>
+                                <Typography variant="subtitle1" sx={{ color: 'black', textDecoration: 'none' }}>
+                                    <Blog blog={blog} />
+                                </Typography>
                             </li>
                         ))}
                     </ul>
