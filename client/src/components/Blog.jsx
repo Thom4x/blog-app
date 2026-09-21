@@ -1,11 +1,14 @@
 import { Link, useMatch, useNavigate } from 'react-router-dom'
-import { Button, Typography, Box } from "@mui/material";
-import { useBlogActions, useUser } from '../hooks/useStore';
-
+import { Button, Typography, Box, TextField } from "@mui/material";
+import { useBlogActions, useNotificationActions, useUser } from '../hooks/useStore';
+import { useField } from '../hooks/useField';
 const Blog = ({ blog }) => {
-  const { likeBlog, deleteBlog } = useBlogActions()
+  const { likeBlog, deleteBlog, postComments } = useBlogActions()
+  const { setNotification } = useNotificationActions()
   const user = useUser()
   const navigate = useNavigate()
+  const { onReset: resetContent, ...commentField } = useField('text')
+
   const match = useMatch("/blogs/:id");
   const isDetailPage = match && match.params.id === blog?.id;
 
@@ -18,6 +21,21 @@ const Blog = ({ blog }) => {
   const handleDelete = (id) => {
     deleteBlog(id)
     navigate("/");
+  }
+
+  const handleComment = (event) => {
+    event.preventDefault()
+    if (!commentField.value || commentField.value.trim("")) {
+      setNotification('No puedes crear un blog vacio, ingresa contenido en los tres', 'error');
+
+    }
+    try {
+      postComments(blog.id, commentField.value)
+      setNotification('Comentario añadido con exito', 'success');
+      resetContent()
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -78,7 +96,17 @@ const Blog = ({ blog }) => {
 
               </div>
               <br />
+
               <Typography variant="h5">comments</Typography>
+
+              <form onSubmit={handleComment} style={{ display: 'flex', gap: 10, height: 50 }}>
+                <TextField
+                  variant='outlined'
+                  label='comment'
+                  {...commentField}
+                />
+                <Button type="submit" variant="contained">ADD COMMENT</Button>
+              </form>
               {blog.comments.length > 0 ?
                 <ul>
                   {blog.comments?.map((u) =>

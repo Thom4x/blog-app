@@ -57,6 +57,20 @@ const useBlogStore = create((set, get) => ({
                 set({ blogLoading: false });
             }
         },
+        postComments: async (id, comment) => {
+            const blog = get().blog.find(n => n.id === id)
+            try {
+                const commentData = { text: comment }
+                const update = await blogService.postComments(id, commentData)
+                console.log("Updated blog with comment:", update);
+                set((state) => ({
+                    blog: state.blog.map(a => a.id === id ? update : a)
+                }))
+
+            } finally {
+                set({ blogLoading: false });
+            }
+        },
         createBlog: async (blog) => {
             const { setNotification } = useNotificationStore.getState().actions
             try {
