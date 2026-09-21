@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import blogService from "../services/blogs";
+import userService from "../services/users"
 const logger = (config) => (set, get) => config(
     (...args) => {
         console.log('prev state', get());
@@ -11,9 +12,18 @@ const logger = (config) => (set, get) => config(
 
 const userStore = create(logger((set) => ({
     user: null,
+    userList: [],
+    userLoading: false,
     actions: {
         setUsers: (user) => set({ user: user }),
-        clearUser: () => set({ user: null })
+        clearUser: () => set({ user: null }),
+        initializeUsers: async () => {
+            try {
+                await userService.getAllUsers().then(data => set({ userList: data }))
+            } finally {
+                set({ userLoading: false })
+            }
+        }
     }
 }), { name: 'userStore' }))
 
@@ -93,12 +103,16 @@ const useBlogStore = create((set, get) => ({
     }
 }), { name: 'BlogStore' })
 
+// Blog store hooks
 export const useBlog = () => useBlogStore(state => state.blog)
 export const useBlogLoading = () => useBlogStore(state => state.blogLoading)
 export const useBlogActions = () => useBlogStore(state => state.actions)
-export const useNotificationActions = () => useNotificationStore((state) => state.actions)
 
+// Notification store hooks
+export const useNotificationActions = () => useNotificationStore((state) => state.actions)
 export const useNotification = () => useNotificationStore(state => state.notification)
 
+// User store hooks
 export const useUser = () => userStore(state => state.user)
+export const useUserList = () => userStore(state => state.userList)
 export const useUserActions = () => userStore(state => state.actions)

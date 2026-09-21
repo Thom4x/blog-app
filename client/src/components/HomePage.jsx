@@ -1,11 +1,12 @@
 import Blog from "./Blog";
 import { useBlog } from '../hooks/useStore'
+import Typography from '@mui/material/Typography';
 const HomePage = () => {
     const blogs = useBlog().toSorted((a, b) => b.likes - a.likes);
 
     return (
         <div>
-            <h2>blogs</h2>
+            <Typography variant="h5">Blogs</Typography>
             {
                 <div>
                     <ul>
