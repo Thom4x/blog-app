@@ -1,42 +1,40 @@
 const test = require("node:test");
 const assert = require("node:assert");
-const middleware = require("../utils/middleware"); // Ajusta la ruta según tu proyecto
+const middleware = require("../utils/middleware");
 
 test("extrae el token del header Authorization", () => {
-  const req = {
+  const request = {
     get: (headerName) => {
       if (headerName.toLowerCase() === "authorization") {
-        return "Bearer eyJhbGciOiJIUzI1NiIsInR5cci6IkpXVCJ9.testtoken";
+        return "Bearer eyJhbGciOiJIUzI1NiIsInR5cci6IkpXVCJ9.TokenTest";
       }
       return null;
     },
   };
-  const res = {};
-  let nextCalled = false;
+  const response = {};
+  let nextWasCalled = false;
   const next = () => {
-    nextCalled = true;
+    nextWasCalled = true;
   };
 
-  middleware.tokenExtractor(req, res, next);
+  middleware.tokenExtractor(request, response, next);
 
-  assert.strictEqual(
-    req.token,
-    "eyJhbGciOiJIUzI1NiIsInR5cci6IkpXVCJ9.testtoken",
-  );
-  assert.strictEqual(nextCalled, true);
+  assert.strictEqual(request.token, "eyJhbGciOiJIUzI1NiIsInR5cci6IkpXVCJ9.TokenTest");
+  assert.strictEqual(nextWasCalled, true);
 });
 
 test("asigna null cuando no existe el header Authorization", () => {
-  const req = {
+  const request = {
     get: () => null,
   };
-  const res = {};
-  let nextCalled = false;
+  const response = {};
+  let nextWasCalled = false;
   const next = () => {
-    nextCalled = true;
+    nextWasCalled = true;
   };
 
-  middleware.tokenExtractor(req, res, next);
-  assert.strictEqual(req.token, null);
-  assert.strictEqual(nextCalled, true);
+  middleware.tokenExtractor(request, response, next);
+
+  assert.strictEqual(request.token, null);
+  assert.strictEqual(nextWasCalled, true);
 });

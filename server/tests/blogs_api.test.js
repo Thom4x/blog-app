@@ -11,39 +11,37 @@ const api = supertest(app);
 const Blog = require("../models/blog");
 const User = require("../models/user");
 
-let userId = null;
-let token = null;
+let authenticatedUserId = null;
+let authenticationToken = null;
 
 beforeEach(async () => {
-  await Blog.deleteMany({}); 
-  await User.deleteMany({}); 
+  await Blog.deleteMany({});
+  await User.deleteMany({});
 
   for (const blog of testDataHelper.blogs) {
-    const blogObject = new Blog(blog);
-    await blogObject.save();
+    const blogDocument = new Blog(blog);
+    await blogDocument.save();
   }
 
-  const userTest = {
+  const testUser = {
     username: "testuser",
     name: "Test User",
     password: "testpassword",
   };
 
-  const createUser = await userBlogHelper.createTestUser(userTest);
-  userId = createUser.id; 
-  token = createUser.token; 
-
-  
+  const createdUser = await userBlogHelper.createTestUser(testUser);
+  authenticatedUserId = createdUser.id;
+  authenticationToken = createdUser.token;
 });
 
-test("Solicitud get para obtener todos lo blogs", async () => {
+test("obtiene todos los blogs", async () => {
   await api
     .get("/api/blogs")
     .expect(200)
     .expect("Content-Type", /application\/json/);
 });
 
-test("la propiedad de identificador único debe llamarse id", async () => {
+test("expone el identificador como id y no como _id", async () => {
   const response = await api
     .get("/api/blogs")
     .expect(200)
@@ -54,9 +52,8 @@ test("la propiedad de identificador único debe llamarse id", async () => {
   assert.strictEqual(response.body[0].hasOwnProperty("_id"), false);
 });
 
-test("solicitud post para blogs", async () => {
-
-  const object = {
+test("crea un blog con los datos proporcionados", async () => {
+  const blogToCreate = {
     title: "fasfaf patterns",
     author: "Michael Chan",
     url: "https://reactpatterns.com/",
@@ -64,8 +61,8 @@ test("solicitud post para blogs", async () => {
   };
   const response = await api
     .post("/api/blogs")
-    .set('Authorization', `Bearer ${token}`) // Agregamos el token al header Authorization
-    .send(object)
+    .set('Authorization', `Bearer ${authenticationToken}`) // Agregamos el token al header Authorization
+    .send(blogToCreate)
     .expect(201)
     .expect("Content-Type", /application\/json/);
 
@@ -73,8 +70,8 @@ test("solicitud post para blogs", async () => {
   assert.strictEqual(blogsAtEnd.length, testDataHelper.blogs.length + 1);
 });
 
-test("si la propiedad likes falta en la solicitud, se establece en 0 por defecto", async () => {
-  const blogSinLikes = {
+test("asigna cero likes cuando la solicitud no incluye likes", async () => {
+  const blogWithoutLikes = {
     title: "Título de prueba sin likes",
     author: "Tomas Holguin",
     url: "http://test-url.com",
@@ -82,16 +79,16 @@ test("si la propiedad likes falta en la solicitud, se establece en 0 por defecto
 
   const response = await api
     .post("/api/blogs")
-    .set("Authorization", `Bearer ${token}`)
-    .send(blogSinLikes)
+    .set("Authorization", `Bearer ${authenticationToken}`)
+    .send(blogWithoutLikes)
     .expect(201)
     .expect("Content-Type", /application\/json/);
 
   assert.strictEqual(response.body.likes, 0);
 });
 
-test("verificar si falta title o url en la solicitud", async () => {
-  const blogSinLikes = {
+test("valida los datos requeridos del blog", async () => {
+  const blogWithRequiredData = {
     author: "Tomas Holguin",
     url: "http://test-url.com",
     title: "Título de prueba sin likes",
@@ -99,22 +96,22 @@ test("verificar si falta title o url en la solicitud", async () => {
 
   const response = await api
     .post("/api/blogs")
-    .set("Authorization", `Bearer ${token}`)
-    .send(blogSinLikes)
+    .set("Authorization", `Bearer ${authenticationToken}`)
+    .send(blogWithRequiredData)
     .expect(201)
     .expect("Content-Type", /application\/json/);
 
   const find = await testDataHelper.checkBlogTitleAndUrl(
-    blogSinLikes.title,
-    blogSinLikes.url,
+    blogWithRequiredData.title,
+    blogWithRequiredData.url,
   );
   assert.strictEqual(find, undefined);
 });
 
-describe("eliminacion por id y actualizacion por id", () => {
-  test("eliminacion de una nota", async () => {
+describe("operaciones de actualización y eliminación de blogs", () => {
+  test("elimina un blog por su identificador", async () => {
     const createdBlog = await userBlogHelper.createBlogForUser(
-      userId,
+      authenticatedUserId,
       {
         title: "Blog de prueba para el usuario",
         url: "http://test-url.com",
@@ -123,35 +120,37 @@ describe("eliminacion por id y actualizacion por id", () => {
       }
     );
     
-    const blogsAtStart = await testDataHelper.getBlogsFromDatabase();
+    const blogsBeforeDeletion = await testDataHelper.getBlogsFromDatabase();
     const blogToDelete = createdBlog;
 
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Authorization", `Bearer ${authenticationToken}`)
       .expect(200);
 
     
     const blogsAtEnd = await testDataHelper.getBlogsFromDatabase();
-    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1);
+    assert.strictEqual(blogsAtEnd.length, blogsBeforeDeletion.length - 1);
 
   });
-  test("likes can be updated", async () => {
-    const blogsAtStart = await testDataHelper.getBlogsFromDatabase();
-    const blogToUpdate = blogsAtStart[0];
+  test("actualiza la cantidad de likes de un blog", async () => {
+    const blogsBeforeUpdate = await testDataHelper.getBlogsFromDatabase();
+    const blogToUpdate = blogsBeforeUpdate[0];
 
-    const updatedData = {
+    const updatedBlogData = {
       likes: blogToUpdate.likes + 1,
     };
 
     await api
       .put(`/api/blogs/${blogToUpdate.id}`)
-      .send(updatedData)
+      .send(updatedBlogData)
       .expect(200)
       .expect("Content-Type", /application\/json/);
 
-    const blogsAtEnd = await testDataHelper.getBlogsFromDatabase();
-    const updatedBlog = blogsAtEnd.find((b) => b.id === blogToUpdate.id);
+    const blogsAfterUpdate = await testDataHelper.getBlogsFromDatabase();
+    const updatedBlog = blogsAfterUpdate.find(
+      (blog) => blog.id === blogToUpdate.id,
+    );
     assert.strictEqual(updatedBlog.likes, blogToUpdate.likes + 1);
   });
 });
