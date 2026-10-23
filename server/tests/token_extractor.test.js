@@ -2,7 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert");
 const middleware = require("../utils/middleware"); // Ajusta la ruta según tu proyecto
 
-test("tokenExtractor extrae correctamente el token del header Authorization", () => {
+test("extrae el token del header Authorization", () => {
   const req = {
     get: (headerName) => {
       if (headerName.toLowerCase() === "authorization") {
@@ -26,7 +26,7 @@ test("tokenExtractor extrae correctamente el token del header Authorization", ()
   assert.strictEqual(nextCalled, true);
 });
 
-test("tokenExtractor asigna null u omite el token si no hay header Authorization", () => {
+test("asigna null cuando no existe el header Authorization", () => {
   const req = {
     get: () => null,
   };
@@ -37,8 +37,6 @@ test("tokenExtractor asigna null u omite el token si no hay header Authorization
   };
 
   middleware.tokenExtractor(req, res, next);
-
-  // Se puede cambiar por null si se desea que el token sea null cuando no hay header
   assert.strictEqual(req.token, null);
   assert.strictEqual(nextCalled, true);
 });

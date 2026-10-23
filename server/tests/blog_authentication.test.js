@@ -8,7 +8,7 @@ const Blog = require("../models/blog");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 
-describe("creación de un blog con token de autenticación", () => {
+describe("creación de blogs con autenticación", () => {
   let token = null;
 
   beforeEach(async () => {
@@ -66,5 +66,8 @@ describe("creación de un blog con token de autenticación", () => {
 
     const blogsAtEnd = await Blog.find({});
     assert.strictEqual(blogsAtEnd.length, 0);
+  });
+  after(async () => {
+    await mongoose.connection.close();
   });
 });

@@ -6,18 +6,18 @@ const mongoose = require("mongoose");
 const app = require("../app.js");
 const api = supertest(app);
 const User = require("../models/user");
-const listHelper = require("./list_helper.js");
+const testDataHelper = require("./helpers/test_data_helper.js");
 
 beforeEach(async () => {
-  await User.deleteMany({}); // Limpiamos la BD de test
+  await User.deleteMany({}); 
 
-  for (const user of listHelper.users) {
+  for (const user of testDataHelper.users) {
     const userObject = new User(user);
     await userObject.save();
   }
 });
-describe("Solicitudes con los Usuarios", () => {
-  test("Solicitud get para obtener todos los usuarios", async () => {
+describe("API de usuarios", () => {
+  test("obtiene todos los usuarios", async () => {
     await api
       .get("/api/users")
       .expect(200)
@@ -25,37 +25,34 @@ describe("Solicitudes con los Usuarios", () => {
   });
 
   test("Usuario no valido", async () => {
-    const usersAtStart = await listHelper.userDb();
-    // que quiero? Preparo los datos
-    const userFake = {
+    const usersAtStart = await testDataHelper.getUsersFromDatabase();
+    const userTest = {
       username: "p",
       name: "palau",
       password: "franco",
     };
-    // los consumo, es await?, que hago?
     const response = await api
       .post("/api/users")
-      .send(userFake)
-      .expect(422)
+      .send(userTest)
+      .expect(400)
       .expect("Content-Type", /application\/json/);
     // hago la comparacion
 
-    assert(
-      response.body.error.includes(
-        "username and password must be at least 3 characters long",
-      ),
+    console.log("body de res", response.body, response.status);
+    assert(response.body.error.includes(
+      "User validation failed: username: Path `username` (`p`, length 1) is shorter than the minimum allowed length (3)."  ),
     );
-    const usersAtEnd = await listHelper.userDb();
+    const usersAtEnd = await testDataHelper.getUsersFromDatabase();
     assert.strictEqual(usersAtEnd.length, usersAtStart.length);
   });
-  test("Que pasa si tengo espacios en blanco", async () => {
-    const qgis = {
+  test("Si el username tiene espacios en blanco", async () => {
+    const userTest = {
       username: "bl op",
       name: "ma",
-      password: "sgfs",
+      password: "test",
     };
 
-    const response = await api.post("/api/users").send(qgis);
+    const response = await api.post("/api/users").send(userTest);
     console.log(response.body, response.status);
   });
 });

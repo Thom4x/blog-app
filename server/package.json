@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test node --test tests/supertest.test.js",
+    "test": "cross-env NODE_ENV=test node --test --test-concurrency=1 tests/*.test.js",
     "start": "cross-env NODE_ENV=production node index.js",
-    "dev": "cross-env NODE_ENV=development  node index.js",
-    "start:test": "cross-env NODE_ENV=test node --watch index.js"
+    "dev": "cross-env NODE_ENV=development  node index.js"
   },
   "author": "",
   "license": "ISC",

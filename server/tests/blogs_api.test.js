@@ -3,8 +3,8 @@ const assert = require("node:assert");
 const supertest = require("supertest");
 const mongoose = require("mongoose");
 
-const listHelper = require("./list_helper.js");
-const createUserHelper = require("./createUser_helper.js");
+const testDataHelper = require("./helpers/test_data_helper.js");
+const userBlogHelper = require("./helpers/user_blog_helper.js");
 const app = require("../app.js");
 
 const api = supertest(app);
@@ -15,10 +15,10 @@ let userId = null;
 let token = null;
 
 beforeEach(async () => {
-  await Blog.deleteMany({}); // Limpiamos la BD de test
-  await User.deleteMany({}); // Limpiamos la BD de test
-  // Insertamos los datos de prueba reales
-  for (const blog of listHelper.blogs) {
+  await Blog.deleteMany({}); 
+  await User.deleteMany({}); 
+
+  for (const blog of testDataHelper.blogs) {
     const blogObject = new Blog(blog);
     await blogObject.save();
   }
@@ -29,7 +29,7 @@ beforeEach(async () => {
     password: "testpassword",
   };
 
-  const createUser = await createUserHelper.createTestUser(userTest);
+  const createUser = await userBlogHelper.createTestUser(userTest);
   userId = createUser.id; 
   token = createUser.token; 
 
@@ -49,7 +49,6 @@ test("la propiedad de identificador único debe llamarse id", async () => {
     .expect(200)
     .expect("Content-Type", /application\/json/);
 
-  // Verificamos que el primer blog tenga 'id' y no '_id'
   
   assert.strictEqual(response.body[0].hasOwnProperty("id"), true);
   assert.strictEqual(response.body[0].hasOwnProperty("_id"), false);
@@ -70,8 +69,8 @@ test("solicitud post para blogs", async () => {
     .expect(201)
     .expect("Content-Type", /application\/json/);
 
-  const blogsAtend = await listHelper.blogsDb();
-  assert.strictEqual(blogsAtend.length, listHelper.blogs.length + 1);
+  const blogsAtEnd = await testDataHelper.getBlogsFromDatabase();
+  assert.strictEqual(blogsAtEnd.length, testDataHelper.blogs.length + 1);
 });
 
 test("si la propiedad likes falta en la solicitud, se establece en 0 por defecto", async () => {
@@ -88,7 +87,6 @@ test("si la propiedad likes falta en la solicitud, se establece en 0 por defecto
     .expect(201)
     .expect("Content-Type", /application\/json/);
 
-  // Verificamos que el blog retornado tenga likes: 0
   assert.strictEqual(response.body.likes, 0);
 });
 
@@ -106,7 +104,7 @@ test("verificar si falta title o url en la solicitud", async () => {
     .expect(201)
     .expect("Content-Type", /application\/json/);
 
-  const find = await listHelper.verifyTitleUrl(
+  const find = await testDataHelper.checkBlogTitleAndUrl(
     blogSinLikes.title,
     blogSinLikes.url,
   );
@@ -115,7 +113,7 @@ test("verificar si falta title o url en la solicitud", async () => {
 
 describe("eliminacion por id y actualizacion por id", () => {
   test("eliminacion de una nota", async () => {
-    let createBlog = await createUserHelper.creatBlogForUser(
+    const createdBlog = await userBlogHelper.createBlogForUser(
       userId,
       {
         title: "Blog de prueba para el usuario",
@@ -125,8 +123,8 @@ describe("eliminacion por id y actualizacion por id", () => {
       }
     );
     
-    const blogsFind = await listHelper.blogsDb();
-    const blogToDelete = createBlog; 
+    const blogsAtStart = await testDataHelper.getBlogsFromDatabase();
+    const blogToDelete = createdBlog;
 
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
@@ -134,12 +132,12 @@ describe("eliminacion por id y actualizacion por id", () => {
       .expect(200);
 
     
-    const blogsAtEnd = await listHelper.blogsDb();
-    assert.strictEqual(blogsAtEnd.length, blogsFind.length - 1);
+    const blogsAtEnd = await testDataHelper.getBlogsFromDatabase();
+    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1);
 
   });
   test("likes can be updated", async () => {
-    const blogsAtStart = await listHelper.blogsDb();
+    const blogsAtStart = await testDataHelper.getBlogsFromDatabase();
     const blogToUpdate = blogsAtStart[0];
 
     const updatedData = {
@@ -152,7 +150,7 @@ describe("eliminacion por id y actualizacion por id", () => {
       .expect(200)
       .expect("Content-Type", /application\/json/);
 
-    const blogsAtEnd = await listHelper.blogsDb();
+    const blogsAtEnd = await testDataHelper.getBlogsFromDatabase();
     const updatedBlog = blogsAtEnd.find((b) => b.id === blogToUpdate.id);
     assert.strictEqual(updatedBlog.likes, blogToUpdate.likes + 1);
   });

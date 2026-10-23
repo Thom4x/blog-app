@@ -1,6 +1,6 @@
 import _ from "lodash";
-import Blog from "../models/blog.js";
-import User from "../models/user.js";
+import Blog from "../../models/blog.js";
+import User from "../../models/user.js";
 
 export const blogs = [
   {
@@ -127,13 +127,12 @@ export const mostLiked = (blogLiked) => {
   return winner;
 };
 
-export const blogsDb = async () => {
-  // Este método devuelve todas las notas que hay en la base de datos en formato JSON. Se utiliza para comprobar el estado de la base de datos antes y después de realizar operaciones de prueba.
+export const getBlogsFromDatabase = async () => {
   const blogs = await Blog.find({});
   return blogs.map((blog) => blog.toJSON());
 };
 
-export const verifyTitleUrl = async (title, url) => {
+export const checkBlogTitleAndUrl = async (title, url) => {
   const blogs = await Blog.find({});
 
   if (
@@ -144,8 +143,7 @@ export const verifyTitleUrl = async (title, url) => {
   }
 };
 
-export const userDb = async () => {
-  // Este método devuelve todas los usuarios que hay en la base de datos en formato JSON. Se utiliza para comprobar el estado de la base de datos antes y después de realizar operaciones de prueba.
+export const getUsersFromDatabase = async () => {
   const users = await User.find({});
   return users.map((user) => user.toJSON());
 };
