@@ -1,7 +1,6 @@
 const express = require("express");
 const path = require("path");
 const app = require("./app.js");
-const logger = require("./utils/logger.js");
 const config = require("./utils/config.js");
 
 app.use(express.json());

@@ -1,8 +1,9 @@
-import _ from "lodash";
-import Blog from "../../models/blog.js";
-import User from "../../models/user.js";
+const _ = require("lodash");
+const Blog = require("../../models/blog");
+const User = require("../../models/user");
 
-export const blogs = [
+
+const blogs = [
   {
     _id: "5a422a851b54a676234d17f7",
     title: "React patterns",
@@ -53,7 +54,7 @@ export const blogs = [
   },
 ];
 
-export const users = [
+const users = [
   {
     _id: "6a422a851b54a676234d17f7",
     username: "Michael Chan",
@@ -80,19 +81,19 @@ export const users = [
   },
 ];
 
-export const dummy = (blogs) => {
+const dummy = (blogs) => {
   // Este método devuelve 1, y se utiliza para comprobar que la función dummy se llama correctamente en los tests.
   if (Array.isArray(blogs)) {
     return 1;
   }
 };
 
-export const totalLikes = (likedBlog) => {
+const totalLikes = (likedBlog) => {
   const liked = likedBlog.map((blogLike) => blogLike.likes);
   return liked.reduce((sum, likes) => sum + likes, 0);
 };
 
-export const favoriteBlog = (blogLiked) => {
+const favoriteBlog = (blogLiked) => {
   if (blogLiked.length === 0) return null;
 
   const maxLiked = Math.max(...blogLiked.map((user) => user.likes));
@@ -105,7 +106,7 @@ export const favoriteBlog = (blogLiked) => {
   };
 };
 
-export const mostBlogsByAuthor = (blogLiked) => {
+const mostBlogsByAuthor = (blogLiked) => {
   const mapped = blogLiked.map((user) => user.author);
   const most = _.countBy(mapped);
   const pairs = _.toPairs(most);
@@ -117,7 +118,7 @@ export const mostBlogsByAuthor = (blogLiked) => {
   return result;
 };
 
-export const mostLiked = (blogLiked) => {
+const mostLiked = (blogLiked) => {
   const gropued = _.groupBy(blogLiked, "author");
   const mapped = _.map(gropued, (blogs, author) => {
     const totalLikes = _.sumBy(blogs, "likes");
@@ -127,23 +128,36 @@ export const mostLiked = (blogLiked) => {
   return winner;
 };
 
-export const getBlogsFromDatabase = async () => {
+const getBlogsFromDatabase = async () => {
   const blogs = await Blog.find({});
   return blogs.map((blog) => blog.toJSON());
 };
 
-export const checkBlogTitleAndUrl = async (title, url) => {
+const checkBlogTitleAndUrl = async (title, url) => {
   const blogs = await Blog.find({});
 
   if (
     !blogs.some((blog) => blog.title === title) ||
     !blogs.some((blog) => blog.url === url)
   ) {
-    response.status(400).json({ error: "Title and URL are required" });
+    return { error: "Blog not found" };
   }
 };
 
-export const getUsersFromDatabase = async () => {
+const getUsersFromDatabase = async () => {
   const users = await User.find({});
   return users.map((user) => user.toJSON());
+};
+
+module.exports = {
+  blogs,
+  users,
+  dummy,
+  totalLikes,
+  favoriteBlog,
+  mostBlogsByAuthor,
+  mostLiked,
+  getBlogsFromDatabase,
+  checkBlogTitleAndUrl,
+  getUsersFromDatabase,
 };

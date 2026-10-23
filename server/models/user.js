@@ -1,8 +1,4 @@
-const { min } = require("lodash");
 const mongoose = require("mongoose");
-const config = require("../utils/config");
-// Conectar
-mongoose.connect(config.MONGODB_URI);
 
 // Crear esquema
 const userSchema = new mongoose.Schema({

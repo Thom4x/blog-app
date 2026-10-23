@@ -48,8 +48,10 @@ test("expone el identificador como id y no como _id", async () => {
     .expect("Content-Type", /application\/json/);
 
   
-  assert.strictEqual(response.body[0].hasOwnProperty("id"), true);
-  assert.strictEqual(response.body[0].hasOwnProperty("_id"), false);
+  const objectResponse = response.body[0];
+  assert.strictEqual(Object.hasOwn(objectResponse, "id"), true);
+  assert.strictEqual(Object.hasOwn(objectResponse, "_id"), false);
+
 });
 
 test("crea un blog con los datos proporcionados", async () => {
@@ -59,12 +61,13 @@ test("crea un blog con los datos proporcionados", async () => {
     url: "https://reactpatterns.com/",
     likes: 1243,
   };
-  const response = await api
+  await api
     .post("/api/blogs")
-    .set('Authorization', `Bearer ${authenticationToken}`) // Agregamos el token al header Authorization
+    .set('Authorization', `Bearer ${authenticationToken}`) 
     .send(blogToCreate)
     .expect(201)
     .expect("Content-Type", /application\/json/);
+
 
   const blogsAtEnd = await testDataHelper.getBlogsFromDatabase();
   assert.strictEqual(blogsAtEnd.length, testDataHelper.blogs.length + 1);
@@ -94,7 +97,7 @@ test("valida los datos requeridos del blog", async () => {
     title: "Título de prueba sin likes",
   };
 
-  const response = await api
+  await api
     .post("/api/blogs")
     .set("Authorization", `Bearer ${authenticationToken}`)
     .send(blogWithRequiredData)
