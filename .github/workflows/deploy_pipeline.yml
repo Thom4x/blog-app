@@ -28,6 +28,10 @@ jobs:
 
             - name: start ambient testing
               run: npm run start:test
+              env:
+                NODE_ENV: test
+                TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
+                SECRET: ${{ secrets.SECRET }}
 
             - name: run tests
               run: npm run test
