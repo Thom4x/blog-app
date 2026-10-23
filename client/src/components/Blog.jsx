@@ -1,7 +1,13 @@
-import { Link, useMatch, useNavigate } from 'react-router-dom'
-import { Button, Typography, Box, TextField } from "@mui/material";
-import { useBlogActions, useNotificationActions, useUser } from '../hooks/useStore';
-import { useField } from '../hooks/useField';
+import { Box, Button, TextField, Typography } from "@mui/material";
+import { Link, useMatch, useNavigate } from "react-router-dom";
+
+import {
+  useBlogActions,
+  useNotificationActions,
+  useUser,
+} from "../hooks/useStore";
+import { useField } from "../hooks/useField";
+
 const Blog = ({ blog }) => {
   const { likeBlog, deleteBlog, postComments } = useBlogActions()
   const { setNotification } = useNotificationActions()
@@ -71,12 +77,12 @@ const Blog = ({ blog }) => {
                   marginTop: "10px",
                 }}
               >
-                <Typography variant="body2">{blog.likes} likes</Typography>
+                <Typography variant="body2">{blog?.likes} likes</Typography>
 
                 {user && (
                   <Button
                     variant="outlined"
-                    onClick={() => likeBlog(blog.id)}
+                    onClick={() => likeBlog(blog?.id)}
                     data-testid="like-button"
                   >
                     like

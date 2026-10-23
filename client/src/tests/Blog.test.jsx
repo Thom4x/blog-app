@@ -1,81 +1,85 @@
 import { render, screen } from "@testing-library/react";
-import Blog from "../components/Blog";
-import { expect } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
-test("Componente que muestra un blog solo con titulo y autor ", () => {
-  const blog = {
-    title: "OVOSOUND-ICEMAN",
-    author: "Drake",
-    url: "https://www.youtube.com/watch?v=6p6PcFFUm5I",
-    likes: 1000,
-    user: {
-      username: "drake",
-      name: "Drake",
-    },
-  };
+import Blog from "../components/Blog";
+import {
+  useBlogActions,
+  useNotificationActions,
+  useUser,
+} from "../hooks/useStore";
 
-  render(<Blog blog={blog} />);
+vi.mock("../hooks/useStore", () => ({
+  useBlogActions: vi.fn(),
+  useNotificationActions: vi.fn(),
+  useUser: vi.fn(),
+}));
 
-  const element = screen.getByTestId("blog");
-  expect(element).toHaveTextContent("OVOSOUND-ICEMAN");
-  expect(element).toHaveTextContent("Drake");
-  expect(element).not.toHaveTextContent(
-    "https://www.youtube.com/watch?v=6p6PcFFUm5I",
+const blog = {
+  id: "1",
+  title: "OVOSOUND-ICEMAN",
+  author: "Drake",
+  url: "https://www.youtube.com/watch?v=6p6PcFFUm5I",
+  likes: 1000,
+  comments: [],
+  user: {
+    username: "drake",
+    name: "Drake",
+  },
+};
+
+const renderBlog = (route = "/", currentBlog = blog) =>
+  render(
+    <MemoryRouter initialEntries={[route]}>
+      <Blog blog={currentBlog} />
+    </MemoryRouter>,
   );
-  expect(element).not.toHaveTextContent("1000");
-});
-test("Al hacer click en ver, se muestra mas informacion", async () => {
-  const blog = {
-    title: "OVOSOUND-ICEMAN",
-    author: "Drake",
-    url: "https://www.youtube.com/watch?v=6p6PcFFUm5I",
-    likes: 1000,
-    user: {
-      username: "drake",
-      name: "Drake",
-    },
-  };
 
-  render(<Blog blog={blog} />);
+describe("<Blog />", () => {
+  const likeBlog = vi.fn();
+  const deleteBlog = vi.fn();
+  const postComments = vi.fn();
+  const setNotification = vi.fn();
 
-  //screen.debug()
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(useBlogActions).mockReturnValue({
+      likeBlog,
+      deleteBlog,
+      postComments,
+    });
+    vi.mocked(useNotificationActions).mockReturnValue({
+      setNotification,
+    });
+    vi.mocked(useUser).mockReturnValue("drake");
+  });
 
-  const user = userEvent.setup();
-  const button = screen.getByTestId("view");
-  await user.click(button);
+  test("muestra el título y el autor en la lista de blogs", () => {
+    renderBlog();
 
-  //screen.debug()
+    const blogSummary = screen.getByTestId("blog");
+    expect(blogSummary).toHaveTextContent("OVOSOUND-ICEMAN");
+    expect(blogSummary).toHaveTextContent("Drake");
+  });
 
-  const element = screen.getByTestId("blog-details");
-  expect(element).toHaveTextContent(
-    "https://www.youtube.com/watch?v=6p6PcFFUm5I",
-  );
-});
-test("Al hacer click en like, se llama al controlador de eventos 2 veces", async () => {
-  const blog = {
-    title: "OVOSOUND-ICEMAN",
-    author: "Drake",
-    url: "https://www.youtube.com/watch?v=6p6PcFFUm5I",
-    likes: 1000,
-    user: {
-      username: "drake",
-      name: "Drake",
-    },
-  };
+  test("muestra los detalles del blog en su ruta", () => {
+    renderBlog(`/blogs/${blog.id}`);
 
-  const mockLikeHandler = vi.fn();
+    expect(screen.getByText(blog.title)).toBeInTheDocument();
+    expect(screen.getByText(blog.url)).toBeInTheDocument();
+    expect(screen.getByText("1000 likes")).toBeInTheDocument();
+  });
 
-  render(<Blog blog={blog} updateLikes={mockLikeHandler} />);
+  test("ejecuta la acción de dar like dos veces", async () => {
+    const user = userEvent.setup();
+    renderBlog(`/blogs/${blog.id}`);
 
-  const user = userEvent.setup();
-  const button = screen.getByTestId("view");
-  await user.click(button);
+    const likeButton = screen.getByRole("button", { name: "like" });
+    await user.click(likeButton);
+    await user.click(likeButton);
 
-  // aqui se hace click en el boton like dos veces
-  const button2 = screen.getAllByText("like");
-  await user.click(button2[0]);
-  await user.click(button2[0]);
-
-  expect(mockLikeHandler.mock.calls).toHaveLength(2);
+    expect(likeBlog).toHaveBeenCalledTimes(2);
+    expect(likeBlog).toHaveBeenCalledWith(blog.id);
+  });
 });
