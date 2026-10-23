@@ -58,7 +58,7 @@ const useBlogStore = create((set, get) => ({
             }
         },
         postComments: async (id, comment) => {
-            const blog = get().blog.find(n => n.id === id)
+            //const blog = get().blog.find(n => n.id === id)
             try {
                 const commentData = { text: comment }
                 const update = await blogService.postComments(id, commentData)

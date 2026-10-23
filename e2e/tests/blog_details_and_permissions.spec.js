@@ -3,7 +3,7 @@ import { loginHelper, createHelper } from "./e2e_helpers";
 describe("Blog Detail", () => {
   beforeEach(async ({ page, request }) => {
     await request.post("/api/testing/reset");
-    await request.post("http://localhost:3003/api/users", {
+    await request.post("/api/users", {
       data: {
         username: "lamine",
         name: "lamine yamal",
@@ -64,8 +64,15 @@ describe("Blog Detail", () => {
         await page
           .getByRole("link", { name: "los bandidos - lamine tamal" })
           .click();
-        await page.getByRole("button", { name: "like" }).click();
-        await expect(page.getByText("Blog liked successfully:")).toBeVisible();
+        await Promise.all([
+          page.waitForResponse(
+            (response) =>
+              response.request().method() === "PUT" &&
+              response.url().includes("/api/blogs/"),
+          ),
+          page.getByRole("button", { name: "like" }).click(),
+        ]);
+        await expect(page.getByText(/Blog liked successfully:/)).toBeVisible();
       });
       test("Un usuario que haya iniciado sesión puede eliminar un blog.", async ({
         page,
