@@ -21,10 +21,9 @@ jobs:
                 cache: 'npm'
             
             - name: install dependencies
-              run: npm ci
+              run: npm install:all
 
             - name: run linter
-              
               run: npm run lint
 
             - name: start ambient testing
