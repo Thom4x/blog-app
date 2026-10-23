@@ -4,22 +4,39 @@ const supertest = require("supertest");
 const mongoose = require("mongoose");
 
 const listHelper = require("./list_helper.js");
+const createUserHelper = require("./createUser_helper.js");
 const app = require("../app.js");
 
 const api = supertest(app);
 const Blog = require("../models/blog");
+const User = require("../models/user");
+
+let userId = null;
+let token = null;
 
 beforeEach(async () => {
   await Blog.deleteMany({}); // Limpiamos la BD de test
-
+  await User.deleteMany({}); // Limpiamos la BD de test
   // Insertamos los datos de prueba reales
   for (const blog of listHelper.blogs) {
     const blogObject = new Blog(blog);
     await blogObject.save();
   }
+
+  const userTest = {
+    username: "testuser",
+    name: "Test User",
+    password: "testpassword",
+  };
+
+  const createUser = await createUserHelper.createTestUser(userTest);
+  userId = createUser.id; 
+  token = createUser.token; 
+
+  
 });
 
-test.only("Solicitud get para obtener todos lo blogs", async () => {
+test("Solicitud get para obtener todos lo blogs", async () => {
   await api
     .get("/api/blogs")
     .expect(200)
@@ -33,29 +50,28 @@ test("la propiedad de identificador único debe llamarse id", async () => {
     .expect("Content-Type", /application\/json/);
 
   // Verificamos que el primer blog tenga 'id' y no '_id'
+  
   assert.strictEqual(response.body[0].hasOwnProperty("id"), true);
   assert.strictEqual(response.body[0].hasOwnProperty("_id"), false);
 });
 
-test.only("solicitud post para blogs", async () => {
+test("solicitud post para blogs", async () => {
+
   const object = {
     title: "fasfaf patterns",
     author: "Michael Chan",
     url: "https://reactpatterns.com/",
     likes: 1243,
   };
-
   const response = await api
     .post("/api/blogs")
+    .set('Authorization', `Bearer ${token}`) // Agregamos el token al header Authorization
     .send(object)
     .expect(201)
     .expect("Content-Type", /application\/json/);
 
   const blogsAtend = await listHelper.blogsDb();
   assert.strictEqual(blogsAtend.length, listHelper.blogs.length + 1);
-
-  //const contents = blogsAtend.map(n => n.content)
-  //assert(contents.includes('async/await simplifies making async calls'))
 });
 
 test("si la propiedad likes falta en la solicitud, se establece en 0 por defecto", async () => {
@@ -67,6 +83,7 @@ test("si la propiedad likes falta en la solicitud, se establece en 0 por defecto
 
   const response = await api
     .post("/api/blogs")
+    .set("Authorization", `Bearer ${token}`)
     .send(blogSinLikes)
     .expect(201)
     .expect("Content-Type", /application\/json/);
@@ -84,6 +101,7 @@ test("verificar si falta title o url en la solicitud", async () => {
 
   const response = await api
     .post("/api/blogs")
+    .set("Authorization", `Bearer ${token}`)
     .send(blogSinLikes)
     .expect(201)
     .expect("Content-Type", /application\/json/);
@@ -97,18 +115,28 @@ test("verificar si falta title o url en la solicitud", async () => {
 
 describe("eliminacion por id y actualizacion por id", () => {
   test("eliminacion de una nota", async () => {
-    const blogsAtStart = await listHelper.blogsDb();
-    const blogToDelete = blogsAtStart[0];
+    let createBlog = await createUserHelper.creatBlogForUser(
+      userId,
+      {
+        title: "Blog de prueba para el usuario",
+        url: "http://test-url.com",
+        likes: 10,
+        author: "Test User",
+      }
+    );
+    
+    const blogsFind = await listHelper.blogsDb();
+    const blogToDelete = createBlog; 
 
-    const response = await api
+    await api
       .delete(`/api/blogs/${blogToDelete.id}`)
-      .expect(204);
+      .set("Authorization", `Bearer ${token}`)
+      .expect(200);
 
-    const blogsAtEnd = await listHelper.blogsDb(); // actualizamos la lista de blogs después de la eliminación
-    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1);
+    
+    const blogsAtEnd = await listHelper.blogsDb();
+    assert.strictEqual(blogsAtEnd.length, blogsFind.length - 1);
 
-    const contents = blogsAtEnd.map((r) => r.content); // Creamos un array con los contenidos de los blogs restantes
-    assert(!contents.includes(blogToDelete.content)); // Verificamos que el contenido del blog eliminado ya no esté presente en la lista final
   });
   test("likes can be updated", async () => {
     const blogsAtStart = await listHelper.blogsDb();

@@ -23,7 +23,7 @@ blogSchema.set("toJSON", {
   transform: (document, returnedObject) => {
     console.log("¡Transformando!");
     returnedObject.id = returnedObject._id.toString();
-    delete returnedObject.__id;
+    delete returnedObject._id;
     delete returnedObject.__v;
   },
 });

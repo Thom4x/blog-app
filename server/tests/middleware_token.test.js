@@ -38,7 +38,7 @@ test("tokenExtractor asigna null u omite el token si no hay header Authorization
 
   middleware.tokenExtractor(req, res, next);
 
-  // Cambia undefined por null si tu middleware asigna null por defecto
+  // Se puede cambiar por null si se desea que el token sea null cuando no hay header
   assert.strictEqual(req.token, null);
   assert.strictEqual(nextCalled, true);
 });

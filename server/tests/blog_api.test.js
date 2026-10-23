@@ -12,19 +12,17 @@ describe("creación de un blog con token de autenticación", () => {
   let token = null;
 
   beforeEach(async () => {
-    // Limpiamos la base de datos y creamos un usuario de prueba
     await Blog.deleteMany({});
     await User.deleteMany({});
 
-    const passwordHash = "somehashedpassword"; // O usa bcrypt si prefieres
-    const user = new User({
+    const passwordHash = "somehashedpassword"; 
+    const testUser = new User({
       username: "testuser",
       name: "Test User",
-      passwordHash,
+      passwordHash: passwordHash,
     });
-    const savedUser = await user.save();
-
-    // Creamos un token válido para este usuario usando la misma clave secreta de la app
+    const savedUser = await testUser.save();
+    
     const userForToken = {
       username: savedUser.username,
       id: savedUser._id,
@@ -33,23 +31,25 @@ describe("creación de un blog con token de autenticación", () => {
   });
 
   test("un blog válido puede ser añadido con un token válido en el header Authorization", async () => {
+    const myToken = token;
     const newBlog = {
       title: "Prueba de token middleware",
       author: "Desarrollador",
       url: "https://ejemplo.com/middleware",
       likes: 5,
     };
-
+    console.log("Token en el test:", myToken);
     await api
       .post("/api/blogs")
-      .set("Authorization", `Bearer ${token}`) // Enviamos el token extraído por el middleware
+      .set("Authorization", `Bearer ${myToken}`)
       .send(newBlog)
       .expect(201)
       .expect("Content-Type", /application\/json/);
 
     const blogsAtEnd = await Blog.find({});
-    expect(blogsAtEnd).toHaveLength(1);
-    expect(blogsAtEnd[0].title).toBe("Prueba de token middleware");
+    console.log("Blogs en la base de datos después de la prueba:", blogsAtEnd);
+    assert.strictEqual(blogsAtEnd.length, 1); 
+    assert.strictEqual(blogsAtEnd[0].title, "Prueba de token middleware");
   });
 
   test("falla con el código 401 si no se provee un token", async () => {
@@ -60,11 +60,11 @@ describe("creación de un blog con token de autenticación", () => {
       likes: 0,
     };
     await api
-      .post("/api/blogs") // No enviamos token
+      .post("/api/blogs") 
       .send(newBlog)
-      .expect(401); // No autorizado porque el middleware no encontró/validó el token
+      .expect(401); 
 
     const blogsAtEnd = await Blog.find({});
-    expect(blogsAtEnd).toHaveLength(0);
+    assert.strictEqual(blogsAtEnd.length, 0);
   });
 });

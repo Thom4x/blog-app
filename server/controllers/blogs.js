@@ -5,7 +5,10 @@ const jwt = require("jsonwebtoken");
 const { getTokenFrom } = require("../utils/middleware");
 
 blogRouter.get("/", async (request, response) => {
-  const blog = await Blog.find({}).populate("user", { username: 1, name: 1 });
+  const blog = await Blog
+  .find({})
+  .populate("user", { username: 1, name: 1 });
+
   response.json(blog);
 
   //Blog
@@ -74,7 +77,7 @@ blogRouter.post("/", async (request, response) => {
     user: user._id,
   });
 
-  let savedBlog = await blog.save();
+  let savedBlog = await blog.save(); 
   savedBlog = await savedBlog.populate("user", { username: 1, name: 1 });
 
   user.blogs = user.blogs.concat(savedBlog._id);
@@ -105,7 +108,7 @@ blogRouter.delete("/:id", async (request, response) => {
 
   // 4. Si todo está bien, eliminar el blog
   await Blog.findByIdAndDelete(request.params.id);
-  response.json({ message: "blog deleted successfully" }).status(204).end();
+  response.json({ message: "blog deleted successfully" }).status(200).end();
 });
 
 blogRouter.put("/:id", async (request, response) => {
