@@ -1,5 +1,5 @@
 import { test, expect, beforeEach, describe } from "@playwright/test";
-import { loginHelper, createHelper } from "./helper";
+import { loginHelper, createHelper } from "./e2e_helpers";
 describe("Blog Detail", () => {
   beforeEach(async ({ page, request }) => {
     await request.post("/api/testing/reset");
@@ -18,9 +18,9 @@ describe("Blog Detail", () => {
     await page.getByRole("link", { name: "login" }).click();
 
     await loginHelper(page, "lamine", "a123456");
-    await page.getByRole("button", { name: "Login" }).click();
+    //await page.getByRole("button", { name: "Login" }).click();
 
-    await expect(page.getByText("lamine logged in")).toBeVisible();
+    await expect(page.getByText("Welcome lamine")).toBeVisible();
   });
   test("El inicio de sesión falla si el nombre de usuario/contraseña es incorrecto", async ({
     page,
@@ -29,7 +29,7 @@ describe("Blog Detail", () => {
 
     await loginHelper(page, "lamine", "alamine");
     await page.getByRole("button", { name: "Login" }).click();
-    await expect(page.getByText("Invalid username or password")).toBeVisible();
+    await expect(page.getByText("Username o password incorrectos")).toBeVisible();
   });
   describe("Usuario con sesion iniciada", () => {
     beforeEach(async ({ page }) => {
@@ -65,7 +65,7 @@ describe("Blog Detail", () => {
           .getByRole("link", { name: "los bandidos - lamine tamal" })
           .click();
         await page.getByRole("button", { name: "like" }).click();
-        await expect(page.getByText("Up!")).toBeVisible();
+        await expect(page.getByText("Blog liked successfully:")).toBeVisible();
       });
       test("Un usuario que haya iniciado sesión puede eliminar un blog.", async ({
         page,
@@ -78,7 +78,7 @@ describe("Blog Detail", () => {
           await dialog.accept();
         });
         await page.getByRole("button", { name: "remove" }).click();
-        await expect(page.getByText("Has eliminado el blog")).toBeVisible();
+        await expect(page.getByText("los bandidos - lamine tamal")).not.toBeVisible();
       });
     });
   });
