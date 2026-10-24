@@ -1,5 +1,6 @@
 const config = require("./utils/config.js");
 const express = require("express");
+const path = require("path");
 const app = express();
 const cors = require("cors");
 const blogRouter = require("./controllers/blogs.js");
@@ -24,7 +25,6 @@ mongoose
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static("dist"));
 app.use(middleware.requestLogger);
 
 app.use(
@@ -35,10 +35,26 @@ app.use(
 );
 app.use("/api/users", userRouter);
 app.use("/api/login", loginRouter);
+app.get("/api/ping", (request, response) => {
+  response.json({ message: "pong", time: new Date().toISOString() });
+});
 
 if (process.env.NODE_ENV === "test") {
   const testingRouter = require("./controllers/testing.js");
   app.use("/api/testing", testingRouter);
+}
+
+if (process.env.NODE_ENV === "production") {
+  const frontendPath = path.join(__dirname, "../client/dist");
+
+  app.use(express.static(frontendPath));
+  app.get("/{*splat}", (request, response, next) => {
+    if (request.path.startsWith("/api/")) {
+      return next();
+    }
+
+    return response.sendFile(path.join(frontendPath, "index.html"));
+  });
 }
 
 app.use(middleware.unknownEndpoint);

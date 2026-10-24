@@ -93,13 +93,16 @@ jobs:
         run: echo "Ejecutando pruebas E2E una sola vez..."
 
       - name: Install E2E dependencies
-        run: npm ci --prefix e2e  
-        
+        run: |
+            npm ci --prefix e2e  
+            npm ci --prefix server
+            npm ci --prefix client
+
       - name: Install Playwright Browsers
         run: npx playwright install chromium --with-deps
 
       - name: run e2e tests
-        run: npm run test:e2e
+        run: npm run start:test && npm run test:e2e
             
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}

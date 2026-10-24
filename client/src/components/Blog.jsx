@@ -121,7 +121,7 @@ const Blog = ({ blog }) => {
                   }
                 </ul>
                 :
-                <p>Este blog no tiene comentarios :/</p>
+                <p>Este blog no tiene comentarios </p>
               }
             </Box>
           </div>
