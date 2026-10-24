@@ -44,18 +44,13 @@ jobs:
             cache-dependency-path: 'server/package-lock.json'
 
         - name: install dependencies
-          run: |
-            cd server
-            npm ci
+          run: cd server && npm ci
+
         - name: run linter
-          run: |
-            cd server
-            npm run lint
+          run: cd server && npm run lint
         
         - name: run tests
-          run: |
-            cd server
-            npm run test
+          run: cd server && npm run test
 
 
   frontend-tests:
@@ -73,18 +68,13 @@ jobs:
             cache-dependency-path: 'client/package-lock.json'
 
         - name: install dependencies
-          run: |
-            cd client
-            npm ci
+          run: cd client && npm ci
 
         - name: run linter
-          run: |
-            cd client
-            npm run lint
+          run: cd client && npm run lint
+
         - name: run tests
-          run: |
-            cd client
-            npm run test
+          run: cd client && npm run test
         
         - name: run build
           run: npm run build 

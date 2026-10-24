@@ -31,7 +31,6 @@
   },
   "devDependencies": {
     "cross-env": "^10.1.0",
-    "eslint-config-prettier": "^10.1.8",
     "start-server-and-test": "^3.0.13"
   }
 }
