@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "install:all": "npm install && npm install --prefix server && npm install --prefix client",
-    "test": "concurrently \"npm run test --prefix server\" \"npm run test --prefix client\"",
     "start:test": "concurrently \"npm run start:test --prefix server\" \"npm run dev --prefix client\"",
+    "test": "concurrently \"npm run test --prefix server\" \"npm run test --prefix client\"",
     "test:e2e": "npm run test --prefix e2e",
     "e2e:serve": "cross-env NODE_ENV=test concurrently \"node server/index.js\" \"npm run dev --prefix client\"",
     "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "cross-env": "^10.1.0",
-    "eslint-config-prettier": "^10.1.8"
+    "eslint-config-prettier": "^10.1.8",
+    "start-server-and-test": "^3.0.13"
   }
 }
