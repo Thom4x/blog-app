@@ -92,6 +92,9 @@ jobs:
       - name: Pruebas E2E
         run: echo "Ejecutando pruebas E2E una sola vez..."
 
+      - name: Install E2E dependencies
+        run: npm ci --prefix e2e  
+        
       - name: Install Playwright Browsers
         run: npx playwright install chromium --with-deps
 
