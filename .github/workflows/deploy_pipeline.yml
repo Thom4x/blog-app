@@ -107,6 +107,7 @@ jobs:
           NODE_ENV: test
           TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
           SECRET: ${{ secrets.SECRET }}
+          PORT: 3003
         run: npm run ci:e2e
             
       - uses: actions/upload-artifact@v4
