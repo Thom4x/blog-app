@@ -94,9 +94,10 @@ jobs:
 
       - name: Install E2E dependencies
         run: |
-            npm ci --prefix e2e  
-            npm ci --prefix server
-            npm ci --prefix client
+          npm ci
+          npm ci --prefix e2e
+          npm ci --prefix server
+          npm ci --prefix client
 
       - name: Install Playwright Browsers
         run: npx playwright install chromium --with-deps
