@@ -185,7 +185,7 @@ jobs:
 
   tag_and_versioning:
     needs: deploy
-    if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '#skip')}}
+    if: ${{ always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') && github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '#skip')}}
     runs-on: ubuntu-latest
     permissions:
       contents: write

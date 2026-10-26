@@ -59,7 +59,7 @@ describe("<Blog />", () => {
     renderBlog();
 
     const blogSummary = screen.getByTestId("blog");
-    expect(blogSummary).toHaveTextContent("OVOSOUND-SORRY TEST");
+    expect(blogSummary).toHaveTextContent("OVOSOUND-SORRY TEST 2 INTO NEW BRANCH");
     expect(blogSummary).toHaveTextContent("Drake");
   });
 
