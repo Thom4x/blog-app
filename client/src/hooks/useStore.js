@@ -80,7 +80,7 @@ const useBlogStore = create((set, get) => ({
                 }))
                 setNotification(`A new blog "${newBlog.title}" by ${newBlog.author} added`, 'success', 2500)
             } catch (error) {
-                setNotification(`Error creating blog: ${error.message}`, 'error', 2500)
+                setNotification(`Error creating blogs: ${error.message}`, 'error', 2500)
             }
         },
         likeBlog: async (id) => {
