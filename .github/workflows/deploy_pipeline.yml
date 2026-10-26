@@ -138,6 +138,50 @@ jobs:
       - name: Trigger Render deploy
         run: curl --fail --silent --show-error "${{ secrets.RENDER_DEPLOY_HOOK }}"
 
+  notify_sucess:
+    needs: deploy
+    runs-on: 'ubuntu-latest'
+    if: ${{ !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') && github.event_name == 'push' && !contains(github.event.head_commit.message, '#skip')}}
+    steps:
+      - uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          content: "Hey ${{ github.repository_owner }}"
+          title: "New version released"
+          description: |
+                  Commit: ${{ github.sha }}
+                  Message: ${{ github.event.head_commit.message || github.event.pull_request.title || 'N/A' }}
+                  Author: ${{ github.event.head_commit.author.name || github.actor }}
+          color: 0x0000ff
+          url: ${{ github.repository }}
+  
+  notify_error:
+    needs: deploy
+    if: ${{ contains(needs.*.result, 'failure') }}
+    runs-on: 'ubuntu-latest'
+    steps:
+        - name: 'Job Notification Failure'
+          uses: sarisia/actions-status-discord@v1.16.0
+          with:
+            webhook: ${{ secrets.DISCORD_WEBHOOK }}
+            status: Failure
+            content: "Hey ${{ github.actor }}, the deployment pipeline has failed. Please check the logs for more details."
+            title: "Deployment failed"
+            description: |
+              Repository: ${{ github.repository }}
+              Branch: ${{ github.ref_name }}
+              Commit: ${{ github.sha }}
+              Message: ${{ github.event.head_commit.message || github.event.pull_request.title || 'N/A' }}
+              Author: ${{ github.event.head_commit.author.name || github.actor }}
+              Workflow: ${{ github.workflow }}
+          
+              View commit [here](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
+              View workflow run [here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            color: "0xff0000"
+            url: "https://github.com/Thom4x/fsopen_ci-cd"
+
   tag_and_versioning:
     needs: deploy
     if: |
@@ -164,3 +208,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
+  
+  
