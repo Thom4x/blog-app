@@ -1,11 +1,15 @@
-name: CI Optimizado
+name: CI / CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
-    types: [opened, synchronize]
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
 
 jobs:
   detect-changes:
@@ -15,6 +19,7 @@ jobs:
       frontend: ${{ steps.filter.outputs.frontend }}
     steps:
       - uses: actions/checkout@v4
+
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -23,68 +28,72 @@ jobs:
               - 'server/**'
             frontend:
               - 'client/**'
-
+            
 
   backend-tests:
     needs: detect-changes
     if: ${{ needs.detect-changes.outputs.backend == 'true' }}
     runs-on: ubuntu-latest
     env:
-        NODE_ENV: test
-        TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
-        SECRET: ${{ secrets.SECRET }}
+      NODE_ENV: test
+      TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
+      SECRET: ${{ secrets.SECRET }}
     steps:
-        - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-        - name: node install
-          uses: actions/setup-node@v4
-          with:
-            node-version: '20' 
-            cache: 'npm'
-            cache-dependency-path: 'server/package-lock.json'
+      - name: Node install
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: server/package-lock.json
 
-        - name: install dependencies
-          run: cd server && npm ci
+      - name: Install dependencies
+        run: cd server && npm ci
 
-        - name: run linter
-          run: cd server && npm run lint
-        
-        - name: run tests
-          run: cd server && npm run test
+      - name: Run linter
+        run: cd server && npm run lint
 
+      - name: Run tests
+        run: cd server && npm run test
 
   frontend-tests:
     needs: detect-changes
     if: ${{ needs.detect-changes.outputs.frontend == 'true' }}
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-        - name: node install
-          uses: actions/setup-node@v4
-          with:
-            node-version: '20' 
-            cache: 'npm'
-            cache-dependency-path: 'client/package-lock.json'
+      - name: Node install
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: client/package-lock.json
 
-        - name: install dependencies
-          run: cd client && npm ci
+      - name: Install dependencies
+        run: cd client && npm ci
 
-        - name: run linter
-          run: cd client && npm run lint
+      - name: Run linter
+        run: cd client && npm run lint
 
-        - name: run tests
-          run: cd client && npm run test
-        
+      - name: Run tests
+        run: cd client && npm run test
 
   e2e-tests:
-    needs: [detect-changes, backend-tests, frontend-tests]
-    runs-on: ubuntu-latest
+    needs:
+      - detect-changes
+      - backend-tests
+      - frontend-tests
     if: |
-      always() && 
-      (needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true') &&
-      (needs.backend-tests.result == 'success' || needs.backend-tests.result == 'skipped') &&
-      (needs.frontend-tests.result == 'success' || needs.frontend-tests.result == 'skipped')
+      always() &&
+      (needs.detect-changes.outputs.backend == 'true' ||
+       needs.detect-changes.outputs.frontend == 'true') &&
+      (needs.backend-tests.result == 'success' ||
+       needs.backend-tests.result == 'skipped') &&
+      (needs.frontend-tests.result == 'success' ||
+       needs.frontend-tests.result == 'skipped')
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -95,13 +104,13 @@ jobs:
           npm ci --prefix server
           npm ci --prefix client
 
-      - name: run build
+      - name: Run build
         run: npm run build
 
-      - name: Install Playwright Browsers
+      - name: Install Playwright browsers
         run: cd e2e && npx playwright install chromium --with-deps
 
-      - name: run e2e tests
+      - name: Run E2E tests
         env:
           NODE_ENV: test
           TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
@@ -112,45 +121,46 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-            name: playwright-report
-            path: playwright-report/
-            retention-days: 30
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
 
   deploy:
-      needs: [e2e-tests]
-      runs-on: 'ubuntu-latest'
-      if: |
-        always() &&
-        github.event_name == 'push' &&
-        github.ref == 'refs/heads/main' &&
-        needs.e2e-tests.result == 'success' &&
-        !contains(github.event.head_commit.message, '#skip')
-        
-      steps:
-        - name: deploy trigger
-          run: curl --fail --silent --show-error "${{ secrets.RENDER_DEPLOY_HOOK }}"
-  
+    needs: e2e-tests
+    if: |
+      always() &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      needs.e2e-tests.result == 'success' &&
+      !contains(github.event.head_commit.message, '#skip')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy
+        run: curl --fail --silent --show-error "${{ secrets.RENDER_DEPLOY_HOOK }}"
 
   tag_and_versioning:
-      needs: 'deploy'
-      runs-on: 'ubuntu-latest'
-      permissions:
-        contents: write
-      if: ${{ github.event_name == 'push' && !contains(github.event.head_commit.message, '#skip') && needs.deploy.result == 'success' }}
-      
-      steps:
-        - uses: actions/checkout@v4
-          with:
-            fetch-depth: '0'
-          
-        - name: github context
-          env:
-            GITHUB_CONTEXT: ${{ toJson(github) }}
-          run: echo "$GITHUB_CONTEXT"
-          
-        - name: Bump version and push tag
-          uses: anothrNick/github-tag-action@4ed44965e0db8dab2b466a16da04aec3cc312fd8  
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-            DEFAULT_BUMP: 'patch'
+    needs: deploy
+    if: |
+      always() &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      needs.deploy.result == 'success' &&
+      !contains(github.event.head_commit.message, '#skip')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      - name: GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@4ed44965e0db8dab2b466a16da04aec3cc312fd8
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
