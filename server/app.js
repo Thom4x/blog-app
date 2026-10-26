@@ -9,7 +9,7 @@ const loginRouter = require("./controllers/login.js");
 const middleware = require("./utils/middleware.js");
 const logger = require("./utils/logger.js");
 const mongoose = require("mongoose");
-
+const fs = require("fs");
 mongoose.set("strictQuery", false);
 
 logger.info("connecting to", config.MONGODB_URI);
@@ -44,9 +44,14 @@ if (process.env.NODE_ENV === "test") {
   app.use("/api/testing", testingRouter);
 }
 
-if (process.env.NODE_ENV === "production") {
-  const frontendPath = path.join(__dirname, "../client/dist");
+const frontendPath = path.join(__dirname, "../client/dist");
+const hasFrontendBuild = fs.existsSync(frontendPath);
 
+if (process.env.NODE_ENV === "production" && !hasFrontendBuild) {
+  throw new Error("Frontend build not found");
+}
+
+if (process.env.NODE_ENV === "production" || hasFrontendBuild) {
   app.use(express.static(frontendPath));
   app.get("/{*splat}", (request, response, next) => {
     if (request.path.startsWith("/api/")) {

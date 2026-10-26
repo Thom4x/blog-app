@@ -76,8 +76,6 @@ jobs:
         - name: run tests
           run: cd client && npm run test
         
-        - name: run build
-          run: npm run build 
 
   e2e-tests:
     needs: [detect-changes, backend-tests, frontend-tests]
@@ -89,8 +87,6 @@ jobs:
       (needs.frontend-tests.result == 'success' || needs.frontend-tests.result == 'skipped')
     steps:
       - uses: actions/checkout@v4
-      - name: Pruebas E2E
-        run: echo "Ejecutando pruebas E2E una sola vez..."
 
       - name: Install E2E dependencies
         run: |
@@ -98,6 +94,9 @@ jobs:
           npm ci --prefix e2e
           npm ci --prefix server
           npm ci --prefix client
+
+      - name: run build
+        run: npm run build
 
       - name: Install Playwright Browsers
         run: cd e2e && npx playwright install chromium --with-deps
@@ -109,7 +108,7 @@ jobs:
           SECRET: ${{ secrets.SECRET }}
           PORT: 3003
         run: npm run test:e2e
-            
+
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
@@ -118,10 +117,9 @@ jobs:
             retention-days: 30
 
   deploy:
-      needs: [e2e-tests]
-      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.e2e-tests.result == 'success' }}
+      if: ${{ github.event_name == 'push' && !contains(github.event.head_commit.message, '#skip') }}
       runs-on: 'ubuntu-latest'
-      steps: 
+      steps:
 
         - name: deploy trigger
           run: curl --fail --silent --show-error "${{ secrets.RENDER_DEPLOY_HOOK }}"

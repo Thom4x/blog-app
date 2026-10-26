@@ -6,7 +6,7 @@
   "scripts": {
     "test": "concurrently \"npm run test --prefix server\" \"npm run test --prefix client\"",
     "test:e2e": "npm run test --prefix e2e",
-    "e2e:serve": "cross-env NODE_ENV=test concurrently \"npm run start:test --prefix server\" \"npm run dev --prefix client\"",
+    "e2e:serve": "cross-env NODE_ENV=test PORT=3003 node server/index.js",
     "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
     "build": "npm run build --prefix client",
     "start": "cross-env NODE_ENV=production npm start --prefix server",
@@ -28,7 +28,6 @@
     "concurrently": "^10.0.5"
   },
   "devDependencies": {
-    "cross-env": "^10.1.0",
-    "start-server-and-test": "^3.0.13"
+    "cross-env": "^10.1.0"
   }
 }
