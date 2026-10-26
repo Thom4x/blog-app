@@ -31,7 +31,7 @@ const Login = () => {
             navigate("/");
             setNotification(`Welcome ${userLogin.username}`, "success");
         } catch (error) {
-            let message = "Ocurrió un problema al iniciar sesión.";
+            let message = `Ocurrió un problema al iniciar sesión. ${error.message}`;
             if (!error.response) {
                 message = "No se pudo conectar con el servidor.";
             } else if (error.response.status === 401) {

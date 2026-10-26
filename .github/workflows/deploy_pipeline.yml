@@ -100,7 +100,7 @@ jobs:
           npm ci --prefix client
 
       - name: Install Playwright Browsers
-        run: npx playwright install chromium --with-deps
+        run: cd e2e && npx playwright install chromium --with-deps
 
       - name: run e2e tests
         env:
@@ -108,7 +108,7 @@ jobs:
           TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
           SECRET: ${{ secrets.SECRET }}
           PORT: 3003
-        run: npm run ci:e2e
+        run: npm run test:e2e
             
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
