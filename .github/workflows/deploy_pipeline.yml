@@ -116,3 +116,13 @@ jobs:
             name: playwright-report
             path: playwright-report/
             retention-days: 30
+
+  deploy:
+      needs: [e2e-tests]
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.e2e-tests.result == 'success' }}
+      runs-on: 'ubuntu-latest'
+      steps: 
+
+        - name: deploy trigger
+          run: curl --fail --silent --show-error "${{ secrets.RENDER_DEPLOY_HOOK }}"
+          
