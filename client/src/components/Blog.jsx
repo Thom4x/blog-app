@@ -50,6 +50,7 @@ const Blog = ({ blog }) => {
         ? (
           <div style={blogStyle} data-testid="blog">
             <Box
+              className="blog-detail-card"
               sx={{
                 maxWidth: 600,
                 border: "1px solid #ccc",
@@ -127,7 +128,7 @@ const Blog = ({ blog }) => {
           </div>
         ) : (
           <div>
-            <div style={blogStyle} data-testid="blog">
+            <div className="blog-preview" style={blogStyle} data-testid="blog">
               <Link
                 to={`/blogs/${blog?.id}`}
                 style={{

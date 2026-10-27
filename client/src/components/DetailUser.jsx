@@ -19,6 +19,7 @@ const DetailUser = ({ user }) => {
                 ? (
                     <div style={blogStyle} data-testid="blog">
                         <Box
+                            className="user-detail-card"
                             sx={{
                                 maxWidth: 600,
                                 border: "1px solid #ccc",

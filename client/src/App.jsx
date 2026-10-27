@@ -58,8 +58,8 @@ const App = () => {
 
   const hoverStyle = { "&:hover": { bgcolor: "rgba(228, 207, 207, 0.32)" } };
   return (
-    <div>
-      <AppBar position="static" >
+    <div className="app-shell">
+      <AppBar position="static" elevation={0} className="app-bar">
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Blog App
@@ -108,10 +108,10 @@ const App = () => {
         </Toolbar>
 
       </AppBar>
-      <br />
-      <Message />
-      <ErrorBoundary>
-        <Routes>
+      <Container maxWidth="lg" className="app-content">
+        <Message />
+        <ErrorBoundary>
+          <Routes>
           <Route
             path="/login"
             element={
@@ -167,8 +167,9 @@ const App = () => {
               <PageNotFound />}>
           </Route>
 
-        </Routes>
-      </ErrorBoundary>
+          </Routes>
+        </ErrorBoundary>
+      </Container>
 
       <div></div>
     </div >

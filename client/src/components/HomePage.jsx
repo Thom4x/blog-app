@@ -8,10 +8,10 @@ const HomePage = () => {
         <div>
             <Typography variant="h5">Blogs</Typography>
             {
-                <div>
+                <div className="blog-list">
                     <ul>
                         {blogs?.map((blog) => (
-                            <li key={blog?.id} style={{ textDecoration: 'none', color: 'black' }}>
+                                    <li key={blog?.id} style={{ textDecoration: 'none', color: 'black' }}>
                                 <Typography variant="subtitle1" sx={{ color: 'black', textDecoration: 'none' }}>
                                     <Blog blog={blog} />
                                 </Typography>
