@@ -44,7 +44,7 @@ jobs:
       - name: Node install
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: npm
           cache-dependency-path: server/package-lock.json
 
@@ -67,7 +67,7 @@ jobs:
       - name: Node install
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: npm
           cache-dependency-path: client/package-lock.json
 
@@ -127,12 +127,7 @@ jobs:
 
   deploy:
     needs: e2e-tests
-    if: |
-      always() &&
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main' &&
-      needs.e2e-tests.result == 'success' &&
-      !contains(github.event.head_commit.message, '#skip')
+    if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.e2e-tests.result == 'success' && !contains(github.event.head_commit.message, '#skip') }}
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Render deploy
