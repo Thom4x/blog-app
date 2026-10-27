@@ -25,7 +25,7 @@ const Users = () => {
     return (
         <div>
             <Typography variant="h5">Users</Typography>
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} className="users-table">
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                         <TableRow>

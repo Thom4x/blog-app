@@ -36,7 +36,7 @@ const BlogForm = () => {
   };
 
   return (
-    <div>
+    <div className="form-page">
       <br />
       <Typography variant="h5">Create a new blog</Typography>
       <br />

@@ -54,7 +54,7 @@ const Login = () => {
         </Togglable>
     );
     return (
-        <div>
+        <div className="login-page">
             <h2>App To Blogs!</h2>
             {loginForm()}
         </div>

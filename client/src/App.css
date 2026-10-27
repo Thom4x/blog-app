@@ -1,31 +1,124 @@
-/* Estilo base de la notificación */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #f5f7fb;
+  color: #1f2937;
+  font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.app-bar {
+  background: linear-gradient(120deg, #263b72 0%, #3f5fa8 100%) !important;
+}
+
+.app-bar .MuiToolbar-root {
+  min-height: 68px;
+}
+
+.app-content {
+  padding-top: 30px;
+  padding-bottom: 48px;
+}
+
+.app-content h2,
+.app-content h5 {
+  color: #263b72;
+  font-weight: 700;
+}
+
+.app-content a {
+  color: #3156a3;
+}
+
+.blog-list {
+  padding: 0;
+  margin: 18px 0 0;
+  list-style: none;
+}
+
+.blog-preview {
+  padding: 15px 18px;
+  margin-bottom: 10px;
+  background: #fff;
+  border: 1px solid #e3e8f2;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(31, 41, 55, 0.05);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.blog-preview:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(31, 41, 55, 0.1);
+}
+
+.blog-detail-card,
+.user-detail-card {
+  max-width: 680px;
+  padding: 24px !important;
+  border: 1px solid #e3e8f2 !important;
+  border-radius: 14px !important;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(31, 41, 55, 0.07);
+}
+
+.form-page,
+.login-page {
+  max-width: 560px;
+}
+
+.toggle-button {
+  padding: 9px 18px;
+  color: #fff;
+  background: #3156a3;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 160ms ease;
+}
+
+.toggle-button:hover {
+  background: #263b72;
+}
+
+.users-table {
+  overflow: hidden;
+  border: 1px solid #e3e8f2;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(31, 41, 55, 0.06);
+}
+
+.users-table .MuiTableHead-root {
+  background: #eef2fb;
+}
+
+.users-table .MuiTableCell-head {
+  color: #263b72;
+  font-weight: 700;
+}
+
 .notification {
   padding: 10px 15px;
+  margin-bottom: 15px;
+  border: 1px solid transparent;
   border-radius: 5px;
   font-size: 16px;
-  margin-bottom: 15px;
   font-weight: bold;
-  border: 1px solid transparent;
 }
 
-/* Estado de Éxito */
 .success {
-  color: green;
-  background: lightgrey;
-  font-size: 20px;
-  border-style: solid;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
+  color: #176b3a;
+  background: #e7f6ed;
 }
 
-/* Estado de Error */
 .error {
-  color: red;
-  background: lightgrey;
-  font-size: 20px;
-  border-style: solid;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
+  color: #a4262c;
+  background: #fcebec;
 }
