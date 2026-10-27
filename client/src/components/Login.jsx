@@ -55,7 +55,7 @@ const Login = () => {
     );
     return (
         <div className="login-page">
-            <h2>App To Blogs!</h2>
+            <h2>App To Blogs! :)</h2>
             {loginForm()}
         </div>
     );
