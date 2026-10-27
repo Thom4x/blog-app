@@ -41,7 +41,7 @@ PORT=3003
 
 ## Uso
 
-## Enlace a la aplicación en producción: [Blog App](https://blog-app-qpfe.onrender.com/)
+## Enlace a la aplicación en producción: [BlogApp](https://blog-app-qpfe.onrender.com/)
 
 ### Desarrollo
 
