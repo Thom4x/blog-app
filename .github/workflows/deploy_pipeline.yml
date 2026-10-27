@@ -125,6 +125,13 @@ jobs:
           path: playwright-report/
           retention-days: 30
 
+  ci-success:
+    needs: [detect-changes, backend-tests, frontend-tests, e2e-tests]
+    if: ${{ always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Todos los tests necesarios pasaron o fueron omitidos correctamente."
+
   deploy:
     needs: e2e-tests
     if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.e2e-tests.result == 'success' && !contains(github.event.head_commit.message, '#skip') }}
