@@ -42,6 +42,8 @@ PORT=3003
 ## Uso
 
 ## Enlace a la aplicación en producción: [BlogApp](https://blog-app-qpfe.onrender.com/)
+## PokeDex Build App: [PokeDex](https://fsopen-ci-cd.onrender.com/)
+## PokeDex GitHub: [PokeDex](https://github.com/Thom4x/fsopen_ci-cd)
 
 ### Desarrollo
 
